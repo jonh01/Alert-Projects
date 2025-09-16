@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-bs-theme="auto">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,58 +8,86 @@
   <link rel="icon" type="image/x-icon" href="../../img/favicon.ico">
 
   <!-- Bootstrap 5 -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
   <!-- Bootstrap Icons (opcional, só para ícones) -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
 
   <style>
-    :root{
+    :root {
       --verde: #2bb673;
       --verde-escuro: #1f8d58;
       --cinza-bg: #f5f6f7;
     }
-    body{ background: var(--cinza-bg); }
-    .app-header{
-      background: #14b88a; /* barra tipo VERDE */
-      color:#fff;
+
+    body {
+      background: var(--cinza-bg);
+    }
+
+    .app-header {
+      background: #14b88a;
+      /* barra tipo VERDE */
+      color: #fff;
       padding: .6rem 0;
     }
-    .app-header .brand{
+
+    .app-header .brand {
       font-weight: 700;
-      letter-spacing:.5px;
+      letter-spacing: .5px;
     }
-    .page-title{
+
+    .page-title {
       font-weight: 700;
-      color:#1f2937;
+      color: #1f2937;
     }
-    .card-filtros .card-header{
-      background:#fff;
+
+    .card-filtros .card-header {
+      background: #fff;
       border-bottom: 0;
-      padding-bottom:0;
+      padding-bottom: 0;
     }
-    .btn-verde{
+
+    .btn-verde {
       background: var(--verde);
-      color:#fff;
+      color: #fff;
       border-color: var(--verde);
     }
-    .btn-verde:hover{ background: var(--verde-escuro); border-color: var(--verde-escuro); }
-    .form-text-muted{ font-size:.8rem;color:#6b7280; }
-    .table thead th{ background:#eef7f2; }
-    .badge-ativo{ background:#e8fff4; color:#0b8a4a; border:1px solid #a9ebc9; }
-    .badge-inativo{ background:#fff0f0; color:#a11; border:1px solid #f3b7b7; }
-    .dropdown-checklist .dropdown-menu{
-      max-height: 260px; overflow:auto; padding:.5rem .75rem;
+
+    .btn-verde:hover {
+      background: var(--verde-escuro);
+      border-color: var(--verde-escuro);
+    }
+
+    .form-text-muted {
+      font-size: .8rem;
+      color: #6b7280;
+    }
+
+    .table thead th {
+      background: #eef7f2;
+    }
+
+    .badge-ativo {
+      background: #e8fff4;
+      color: #0b8a4a;
+      border: 1px solid #a9ebc9;
+    }
+
+    .badge-inativo {
+      background: #fff0f0;
+      color: #a11;
+      border: 1px solid #f3b7b7;
+    }
+
+    .dropdown-checklist .dropdown-menu {
+      max-height: 260px;
+      overflow: auto;
+      padding: .5rem .75rem;
       width: 320px;
     }
   </style>
 </head>
+
 <body>
   <!-- Header (simplificado para o protótipo) -->
   <header class="app-header">
@@ -68,15 +97,18 @@
         <span>VERDE • Gestão de Alertas</span>
       </div>
       <div class="d-flex align-items-center gap-3">
-        <a href="https://wiki.verde.rj.def.br" target="_blank" class="text-white text-decoration-none"><i class="bi bi-book"></i> Wiki</a>
+        <a href="https://wiki.verde.rj.def.br" target="_blank" class="text-white text-decoration-none"><i
+            class="bi bi-book"></i> Wiki</a>
         <div class="dropdown">
           <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
             <i class="bi bi-person-circle"></i> Alterar-para-variavel
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="teste.html">Meus Alertas</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Sair</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" id="botaoSair">Sair</a></li>
           </ul>
         </div>
       </div>
@@ -115,8 +147,8 @@
           <div class="col-12 col-md-4">
             <label class="form-label">Status</label>
             <select id="fStatus" class="form-select">
-                <option value="todos" selected>Todos</option>
-              <option value="vigentes" >Vigentes</option>
+              <option value="todos" selected>Todos</option>
+              <option value="vigentes">Vigentes</option>
               <option value="finalizados">Finalizados</option>
               <option value="elaboracao">Em Elaboração</option>
             </select>
@@ -158,9 +190,9 @@
   </main>
 
   <!-- Modal: Criar Alerta -->
-  <div class="modal fade" id="modalCriarAlerta" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content">
+  <div class="modal" id="modalCriarAlerta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content ">
         <div class="modal-header">
           <h5 class="modal-title">
             <i class="bi bi-megaphone me-2 text-success"></i>Criar Alerta
@@ -181,7 +213,12 @@
               </div>
 
               <div class="col-12">
-                <label class="form-label d-block mb-1">Tipo de alerta</label>
+                <label class="form-label d-block mb-1">
+                  Tipo de alerta
+                  <i class="bi bi-info-circle ms-1 text-muted" data-bs-toggle="tooltip" data-bs-placement="right"
+                    title="• Pop-up aparece no topo direito para quem está logado. • Modal é apresentado no login até o usuário clicar em ESTOU CIENTE."></i>
+                </label>
+
                 <div class="btn-group" role="group" aria-label="Tipo de alerta">
                   <input type="radio" class="btn-check" name="aTipo" id="aTipoPopup" value="popup" autocomplete="off">
                   <label class="btn btn-outline-success" for="aTipoPopup">Pop-up</label>
@@ -189,20 +226,23 @@
                   <input type="radio" class="btn-check" name="aTipo" id="aTipoModal" value="modal" autocomplete="off">
                   <label class="btn btn-outline-success" for="aTipoModal">Modal</label>
 
-                  <input type="radio" class="btn-check" name="aTipo" id="aTipoAmbos" value="ambos" autocomplete="off" checked>
+                  <input type="radio" class="btn-check" name="aTipo" id="aTipoAmbos" value="ambos" autocomplete="off"
+                    checked>
                   <label class="btn btn-outline-success" for="aTipoAmbos">Ambos</label>
-                </div>
-                <div class="form-text form-text-muted mt-1">
-                  • Pop-up aparece no topo direito para quem está logado. • Modal é apresentado no login até o usuário clicar em <strong>ESTOU CIENTE</strong>.
                 </div>
               </div>
 
               <!-- Tipo de órgão: dropdown com checkboxes -->
               <div class="col-12">
-                <label class="form-label">Tipo de Órgão</label>
+                <label class="form-label">
+                  Tipo de Órgão
+                  <i class="bi bi-info-circle ms-1 text-muted" data-bs-toggle="tooltip"
+                    title="Ao marcar Todos, todos os tipos são selecionados."></i>
+                </label>
                 <div class="dropdown dropdown-checklist">
-                  <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" data-bs-toggle="dropdown" id="btnOrgaos">
-                    
+                  <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button"
+                    data-bs-toggle="dropdown" id="btnOrgaos">
+
                   </button>
                   <div class="dropdown-menu" aria-labelledby="btnOrgaos">
                     <div class="form-check ms-1">
@@ -211,51 +251,56 @@
                     </div>
                     <hr class="my-2">
                     <div class="form-check ms-1">
-                      <input class="form-check-input orgao-item" type="checkbox" value="NÚCLEO DE PRIMEIRO ATENDIMENTO" id="orgao_npa" checked>
+                      <input class="form-check-input orgao-item" type="checkbox" value="NÚCLEO DE PRIMEIRO ATENDIMENTO"
+                        id="orgao_npa" checked>
                       <label class="form-check-label" for="orgao_npa">NÚCLEO DE PRIMEIRO ATENDIMENTO</label>
                     </div>
                     <div class="form-check ms-1">
-                      <input class="form-check-input orgao-item" type="checkbox" value="AÇÃO SOCIAL 3" id="orgao_as3" checked>
+                      <input class="form-check-input orgao-item" type="checkbox" value="AÇÃO SOCIAL 3" id="orgao_as3"
+                        checked>
                       <label class="form-check-label" for="orgao_as3">AÇÃO SOCIAL 3</label>
                     </div>
                     <div class="form-check ms-1">
-                      <input class="form-check-input orgao-item" type="checkbox" value="PLANTÃO DIURNO" id="orgao_plantao" checked>
+                      <input class="form-check-input orgao-item" type="checkbox" value="PLANTÃO DIURNO"
+                        id="orgao_plantao" checked>
                       <label class="form-check-label" for="orgao_plantao">PLANTÃO DIURNO</label>
                     </div>
                   </div>
                 </div>
-                <div class="form-text form-text-muted">Ao marcar <strong>Todos</strong>, todos os tipos são selecionados.</div>
               </div>
 
               <!-- Horário do alerta -->
               <div class="col-12 col-md-6">
-                <label class="form-label">Data/hora do disparo</label>
+                <label class="form-label">
+                  Data/hora do disparo
+                  <i class="bi bi-info-circle ms-1 text-muted" data-bs-toggle="tooltip"
+                    title="Agende o disparo do alerta."></i>
+                </label>
                 <input type="datetime-local" class="form-control" id="aData" />
-                <div class="form-text form-text-muted">Agende o disparo do alerta.</div>
               </div>
               <div class="col-12 col-md-6">
-                <label class="form-label d-block">Opção de disparo</label>
+                <label class="form-label d-block">Opção de disparo <i class="bi bi-info-circle ms-1 text-muted"
+                    data-bs-toggle="tooltip" title="Se marcado, o alerta dispara ao finalizar."></i></label>
                 <div class="form-check mt-2">
                   <input class="form-check-input" type="checkbox" id="aInstantaneo">
                   <label class="form-check-label" for="aInstantaneo">Instantâneo</label>
                 </div>
-                <div class="form-text form-text-muted">Se marcado, o alerta dispara ao finalizar.</div>
               </div>
 
               <!-- Vigência (habilita só para modal/ambos) -->
               <div class="col-12 col-md-6">
-                <label class="form-label">Vigência até</label>
-                <input type="date" class="form-control" id="aVigencia">
-                <div class="form-text form-text-muted">Habilitado para <em>Modal</em> ou <em>Ambos</em>.</div>
+                <label class="form-label">Vigência até <i class="bi bi-info-circle ms-1 text-muted"
+                    data-bs-toggle="tooltip" title="Habilitado para Modal ou Ambos."></i></label>
+                <input type="datetime-local" class="form-control" id="aVigencia">
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
-            <button class="btn btn-primary" type="submit" id="btnSalvar">
+            <button class="btn btn-outline-secondary" id="btnCancelar" type="button" data-bs-dismiss="modal">Cancelar</button>
+            <button class="btn btn-primary" type="button" id="btnSalvar">
               <i class="bi bi-save2 me-1"></i>Salvar
             </button>
-            <button class="btn btn-verde" type="button" id="btnFinalizar">
+            <button class="btn btn-verde" type="submit" id="btnFinalizar">
               <i class="bi bi-send-check me-1"></i>Finalizar
             </button>
           </div>
@@ -286,148 +331,7 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    // utilitários bootstrap
-    const toast = (id) => new bootstrap.Toast(document.getElementById(id));
-
-    // abrir modal pelo botão da página
-    document.getElementById('btnNovoAlerta')
-      .addEventListener('click', () => bootstrap.Modal.getOrCreateInstance('#modalCriarAlerta').show());
-
-    // filtros básicos (somente protótipo)
-    document.getElementById('formFiltros').addEventListener('submit', (e) => {
-      e.preventDefault();
-      // no protótipo não há backend; apenas feedback visual
-      document.getElementById('tabelaAlertas').classList.add('table-striped');
-      setTimeout(() => document.getElementById('tabelaAlertas').classList.remove('table-striped'), 800);
-    });
-    document.getElementById('btnLimparFiltros').addEventListener('click', () => {
-      document.getElementById('formFiltros').reset();
-    });
-
-    // --------- TIPO DE ALERTA: controla vigência -----------
-    const radiosTipo = document.querySelectorAll('input[name="aTipo"]');
-    const inputVigencia = document.getElementById('aVigencia');
-
-    function updateVigenciaState(){
-      const tipo = document.querySelector('input[name="aTipo"]:checked')?.value;
-      const habilita = (tipo === 'modal' || tipo === 'ambos');
-      inputVigencia.disabled = !habilita;
-      if(!habilita){ inputVigencia.value = ''; }
-    }
-    radiosTipo.forEach(r => r.addEventListener('change', updateVigenciaState));
-    updateVigenciaState();
-
-    // --------- INSTANTÂNEO x DATA (excludentes) ------------
-    const chkInstant = document.getElementById('aInstantaneo');
-    const inputData = document.getElementById('aData');
-    function syncDisparo(){
-      if(chkInstant.checked){
-        inputData.value = '';
-        inputData.disabled = true;
-      }else{
-        inputData.disabled = false;
-      }
-    }
-    chkInstant.addEventListener('change', syncDisparo);
-    inputData.addEventListener('input', () => { if(inputData.value) chkInstant.checked = false; syncDisparo(); });
-    syncDisparo();
-
-    // --------- Dropdown de órgãos com checkboxes -----------
-    const btnOrgaos = document.getElementById('btnOrgaos');
-    const cbTodos = document.getElementById('orgao_todos');
-    const itens = document.querySelectorAll('.orgao-item');
-
-    function refreshLabel(){
-      const selecionados = [...itens].filter(i => i.checked).map(i => i.value);
-      if(selecionados.length === itens.length){
-        cbTodos.checked = true;
-        btnOrgaos.textContent = 'Todos';
-      }else{
-        cbTodos.checked = false;
-        btnOrgaos.textContent = selecionados.length ? selecionados.join(', ') : 'Nenhum selecionado';
-      }
-    }
-    cbTodos.addEventListener('change', () => {
-      itens.forEach(i => i.checked = cbTodos.checked);
-      refreshLabel();
-    });
-    itens.forEach(i => i.addEventListener('change', refreshLabel));
-    refreshLabel();
-
-    // --------- Tabela demo / ações -------------------------
-    const tbody = document.querySelector('#tabelaAlertas tbody');
-
-    const seed = [
-      {data:'2025-03-23 14:40', titulo:'Emissor de Ressalva', desc:'Alerta de ressava, recepcionista, atendente.', resp:'NÚCLEO DE PRIMEIRO ATENDIMENTO', vigente:true},
-      {data:'2025-03-24 09:10', titulo:'Plantão Diurno', desc:'Ajustes de atendimento em Resende/Barra Mansa/Itatiaia.', resp:'PLANTÃO DIURNO', vigente:true},
-      {data:'2025-03-20 18:05', titulo:'Ação Social 3', desc:'Comunicado de rotina.', resp:'AÇÃO SOCIAL 3', vigente:false},
-    ];
-    function renderRow(a){
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${a.data}</td>
-        <td class="fw-semibold">${a.titulo}</td>
-        <td>${a.desc}</td>
-        <td>${a.resp}</td>
-        <td>
-          ${a.vigente
-            ? '<span class="badge rounded-pill badge-ativo">SIM</span>'
-            : '<span class="badge rounded-pill badge-inativo">NÃO</span>'}
-        </td>
-        <td class="text-center">
-          <button class="btn btn-sm btn-outline-secondary m-1" title="Editar"><i class="bi bi-pencil-square"></i></button>
-          <button class="btn btn-sm btn-outline-danger me-1 btnEncerrar" title="Encerrar"><i class="bi bi-x-octagon"></i></button>
-          <button class="btn btn-sm btn-outline-primary" title="Visualizar"><i class="bi bi-eye"></i></button>
-        </td>`;
-      // ação encerrar (só protótipo: alterna o badge)
-      tr.querySelector('.btnEncerrar').addEventListener('click', () => {
-        a.vigente = false;
-        tr.querySelector('td:nth-child(5)').innerHTML = '<span class="badge rounded-pill badge-inativo">NÃO</span>';
-      });
-      tbody.prepend(tr);
-    }
-    seed.forEach(renderRow);
-
-    // --------- Salvar / Finalizar (protótipo) --------------
-    function coletarAlerta(){
-      const tipo = document.querySelector('input[name="aTipo"]:checked')?.value;
-      const orgaos = cbTodos.checked ? 'TODOS' : [...itens].filter(i=>i.checked).map(i=>i.value).join(', ');
-      return {
-        data: new Date().toLocaleString(),
-        titulo: document.getElementById('aTitulo').value.trim(),
-        desc: document.getElementById('aDescricao').value.trim(),
-        resp: orgaos,
-        tipo,
-        instantaneo: chkInstant.checked,
-        quando: inputData.value,
-        vigencia: inputVigencia.value,
-        vigente: (tipo === 'modal' || tipo === 'ambos') ? true : true // para demo, entra como vigente
-      };
-    }
-
-    document.getElementById('formAlerta').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const alerta = coletarAlerta();
-      renderRow(alerta);
-      toast('toastOK').show();
-    });
-
-    document.getElementById('btnFinalizar').addEventListener('click', () => {
-      // validações simples
-      if(!document.getElementById('aTitulo').value.trim() || !document.getElementById('aDescricao').value.trim()){
-        document.getElementById('formAlerta').reportValidity();
-        return;
-      }
-      const alerta = coletarAlerta();
-      renderRow(alerta);
-      bootstrap.Modal.getInstance(document.getElementById('modalCriarAlerta')).hide();
-      toast('toastFinalizado').show();
-      document.getElementById('formAlerta').reset();
-      // manter estados coerentes
-      updateVigenciaState(); syncDisparo(); refreshLabel();
-    });
-  </script>
+  <script type="module" src="./index.js"></script>
 </body>
+
 </html>
