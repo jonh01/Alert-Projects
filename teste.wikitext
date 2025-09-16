@@ -1,0 +1,213 @@
+==Painéis Disponíveis==
+
+<div width: 100%; style="display:flex; flex-wrap: wrap; justify-content: start; align-items: start; margin-top: 30px;">
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Violencia_Estatal.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Violência Estatal</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Violencia_Estatal_Capital.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Violência Estatal Capital</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Aaudiencias.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel De Audiências</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Acolhimentos_Infancia.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Acolhimentos Infância</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Agendamento_Visao_Orgao.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Agendamento Visão Órgão</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Analise_Frequencia_Agendados.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Analise Frequência Agendados</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_APP_IA.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel APP IA</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Atendimento_no_interior_da_unidade_prisional.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Atendimento no interior da unidade prisional</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Atendimentos_Orgaos.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Atendimentos Órgãos</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Casos.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Casos</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel Afastamentos.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel de Afastamentos</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Documentos.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Documentos</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Encaminhamento_Urguncia_Gerado_Partir_Agendamento.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Encaminhamento Urgência Gerado Partir Agendamento</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Encaminhamento_Visao_Orgao.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Encaminhamento Visão Órgão</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Gestao_App.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Gestão App</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Intimacao.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Intimação</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Litigios_Distribuidos_Pessoa_Juridica.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Litígios Distribuídos Pessoa Jurídica</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Lotacao_por_Orgao.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Lotação por Órgão</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Manifestacoes_Processuais.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Manifestações Processuais</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Ocorrencia_Visao_Orgao.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Ocorrência Visão Órgão</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Perfil_Assistido.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Perfil do Assistido</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Perfil_Colaboradores_da_Defensoria.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Perfil de Colaboradores da Defensoria</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Perfil_Custodiados.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Perfil Custodiados</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Peticoes_Iniciais_Distribuidas.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Petições Iniciais Distribuídas</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Solucoes_Extrajudiciais.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Soluções Extrajudiciais</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+<div class="div-card-painel">
+<div class="div-image-card-painel"><div style="max-height:100%; max-width:100%;">[[Arquivo:Painel_Violacao_Direitos_Garantias.jpeg|semmoldura|356px]]</div></div>
+<div class="div-text-card-painel">
+<h3>Painel Violação Direitos Garantias</h3>
+<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+</div>
+</div>
+
+</div>

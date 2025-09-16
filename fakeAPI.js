@@ -76,6 +76,14 @@ export function initDB() {
 
 export const api = {
 
+    async getTipoOrgao() { 
+        let orgaos = load('orgaos');
+        let tiposUnicos = [...new Set(orgaos.map(o => o.tipoOrgao))];
+
+        return tiposUnicos;
+
+    },
+
     async getAlerts({ status, inicio, fim } = {}) {
         let alerts = load("alertas");
 

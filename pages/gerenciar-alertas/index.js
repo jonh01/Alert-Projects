@@ -1,3 +1,5 @@
+import { api } from "../../fakeAPI.js";
+
 // utilitários bootstrap
 const toast = (id) => new bootstrap.Toast(document.getElementById(id));
 
@@ -9,12 +11,47 @@ document.addEventListener("DOMContentLoaded", function () {
   tooltipTriggerList.map((el) => new bootstrap.Tooltip(el));
 });
 
+
+// Carregar tipo órgão
+
+
+function addOptionsTipoOrgao() {
+
+  let tipoOrgao = [];
+
+  api.getTipoOrgao().then(res => {
+    tipoOrgao = res;
+  }).catch(error => {
+    console.warn('Deu ruim!', error);
+  })
+
+  let objTipoOrgao = '';
+
+  tipoOrgao.forEach(tp => {
+
+    objTipoOrgao+= `
+    <div class="form-check ms-1">
+      <input class="form-check-input orgao-item" type="checkbox" value="${tp}" id="${tp}" checked>
+      <label class="form-check-label" for="${tp}">${tp}</label>
+    </div>
+    `
+  });
+
+  console.log('teste1: ', tipoOrgao);
+
+  document.getElementById("tipoOrgaoDinamico").innerHTML = objTipoOrgao;
+
+}
+
+
 // abrir modal pelo botão da página
 document
   .getElementById("btnNovoAlerta")
-  .addEventListener("click", () =>
-    bootstrap.Modal.getOrCreateInstance("#modalCriarAlerta").show()
-  );
+  .addEventListener("click", () => {
+    addOptionsTipoOrgao();
+    bootstrap.Modal.getOrCreateInstance("#modalCriarAlerta").show();
+    
+  });
 
 // filtros básicos (somente protótipo)
 document.getElementById("formFiltros").addEventListener("submit", (e) => {
