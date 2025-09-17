@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-
   // add options de tipo órgão nos filtros
 
   addOptionsTipoOrgaoFiltro();
@@ -61,7 +60,7 @@ async function addOptionsTipoOrgao() {
 
 async function addOptionsTipoOrgaoFiltro() {
   try {
-        const res = await api.getTipoOrgao();
+    const res = await api.getTipoOrgao();
     const container = document.getElementById("fTipoOrgao");
 
     let html = container.innerHTML; // mantém o "Todos" que já existe
@@ -91,20 +90,23 @@ document.getElementById("btnNovoAlerta").addEventListener("click", () => {
 document.getElementById("formFiltros").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  api.getAlerts({
-    status: document.getElementById("fStatus").value || null, 
-    inicio: document.getElementById("fDataInicio").value || null, 
-    fim: document.getElementById("fDataFim").value || null, 
-    tipoOrgao: document.getElementById("fTipoOrgao").value || null
-  }).then(res => {
-    console.log('teste ', res);
-    tbody.innerHTML = ''
-    res.forEach(linha => {
-      tbody.prepend(renderRow(linha));
+  api
+    .getAlerts({
+      status: document.getElementById("fStatus").value || null,
+      inicio: document.getElementById("fDataInicio").value || null,
+      fim: document.getElementById("fDataFim").value || null,
+      tipoOrgao: document.getElementById("fTipoOrgao").value || null,
     })
-  }).catch(error => {
-    console.warn('Erro ao buscar alertas: ', error);
-  })
+    .then((res) => {
+      console.log("teste ", res);
+      tbody.innerHTML = "";
+      res.forEach((linha) => {
+        tbody.prepend(renderRow(linha));
+      });
+    })
+    .catch((error) => {
+      console.warn("Erro ao buscar alertas: ", error);
+    });
 });
 
 document.getElementById("btnLimparFiltros").addEventListener("click", () => {
@@ -191,29 +193,6 @@ addOptionsTipoOrgao().then(() => initDropdownOrgaos());
 // --------- Tabela demo / ações -------------------------
 const tbody = document.getElementById("tbodyAlert");
 
-const seed = [
-  {
-    data: "2025-03-23 14:40",
-    titulo: "Emissor de Ressalva",
-    desc: "Alerta de ressava, recepcionista, atendente.",
-    resp: "NÚCLEO DE PRIMEIRO ATENDIMENTO",
-    status: true,
-  },
-  {
-    data: "2025-03-24 09:10",
-    titulo: "Plantão Diurno",
-    desc: "Ajustes de atendimento em Resende/Barra Mansa/Itatiaia.",
-    resp: "PLANTÃO DIURNO",
-    status: true,
-  },
-  {
-    data: "2025-03-20 18:05",
-    titulo: "Ação Social 3",
-    desc: "Comunicado de rotina.",
-    resp: "AÇÃO SOCIAL 3",
-    status: false,
-  },
-];
 function renderRow(a) {
   const tr = document.createElement("tr");
   tr.innerHTML = `
@@ -279,23 +258,64 @@ async function coletarAlerta(salvar) {
   }
 }
 
-document.getElementById("btnSalvar").addEventListener("click", () => {
+// valida o tipo orgao que é diferente dos demais
+
+function InvalidForm() {
   if (
     !document.getElementById("aTitulo").value.trim() ||
     !document.getElementById("aDescricao").value.trim() ||
     (!inputData.value && !chkInstant.checked)
   ) {
     document.getElementById("formAlerta").reportValidity();
-    return;
+    return true;
   }
+
+  const orgaosSelecionados = [
+    ...document.querySelectorAll(".orgao-item:checked"),
+  ];
+
+  // se "Todos" não estiver marcado e nenhum item individual estiver selecionado
+  const todosMarcado = document.getElementById("orgao_todos").checked;
+
+  if (!todosMarcado && orgaosSelecionados.length === 0) {
+    // feedback visual
+    const btnOrgaos = document.getElementById("btnOrgaos");
+    btnOrgaos.classList.add("is-invalid");
+
+    // mensagem customizada
+    btnOrgaos.setCustomValidity("Selecione pelo menos um tipo de órgão");
+    btnOrgaos.reportValidity();
+    return true;
+  } else {
+    // limpa estado inválido se ok
+    const btnOrgaos = document.getElementById("btnOrgaos");
+    btnOrgaos.classList.remove("is-invalid");
+    btnOrgaos.setCustomValidity("");
+  }
+}
+
+document.getElementById("btnSalvar").addEventListener("click", () => {
+  if (InvalidForm()) return;
 
   coletarAlerta(true)
     .then((result) => {
       api
         .createAlert(result)
         .then((res) => {
+          const modalElement = document.getElementById("modalCriarAlerta");
+          const modal = bootstrap.Modal.getInstance(modalElement);
+
+          if (modal) {
+            // tira o foco de qualquer input/textarea antes de fechar
+            if (document.activeElement) document.activeElement.blur();
+            modal.hide();
+          }
+
           tbody.prepend(renderRow(res));
+
           toast("toastOK").show();
+
+          limparForm();
         })
         .catch((error) => {
           console.warn("erro ao salvar o alerta! ", error);
@@ -308,14 +328,7 @@ document.getElementById("btnSalvar").addEventListener("click", () => {
 
 document.getElementById("formAlerta").addEventListener("submit", (e) => {
   e.preventDefault();
-  if (
-    !document.getElementById("aTitulo").value.trim() ||
-    !document.getElementById("aDescricao").value.trim() ||
-    (!inputData.value && !chkInstant.checked)
-  ) {
-    document.getElementById("formAlerta").reportValidity();
-    return;
-  }
+  if (InvalidForm()) return;
 
   coletarAlerta(false)
     .then((result) => {
