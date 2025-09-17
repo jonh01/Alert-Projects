@@ -1,30 +1,41 @@
 import { api } from "../../fakeAPI.js";
+import { dataFormatada, limitarPalavras } from "../../utils.js";
 
 // utilitários bootstrap
 const toast = (id) => new bootstrap.Toast(document.getElementById(id));
 
-// evento para o tooltip
+// Carregamento inicial da página
 document.addEventListener("DOMContentLoaded", function () {
-  api.getUsuLogado().then(res => {
+  api
+    .getUsuLogado()
+    .then((res) => {
+      if (!res.tipoUsuario.includes("ADM"))
+        window.location.href = "../meus-alertas/index.html";
 
-    if(!res.tipoUsuario.includes("ADM"))
-            window.location.href = "../meus-alertas/index.html";
-    
-    console.log(res);
-    document.getElementById('usuLogado').innerText = ` ${res.nome}`
-  }).catch(error => {
-    api.logout().finally(() =>{
-      console.warn('deu erro: ', error)
-      window.location.href = "../login/index.html";
+      console.log(res);
+      document.getElementById("usuLogado").innerText = ` ${res.nome}`;
     })
-  });
+    .catch((error) => {
+      api.logout().finally(() => {
+        console.warn("deu erro: ", error);
+        window.location.href = "../login/index.html";
+      });
+    });
+
+
+  // add options de tipo órgão nos filtros
+
+  addOptionsTipoOrgaoFiltro();
+
+  //  evento para o tooltip
+
   const tooltipTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="tooltip"]')
   );
   tooltipTriggerList.map((el) => new bootstrap.Tooltip(el));
 });
 
-// ---------------- Carregar tipo órgão ----------------
+// ---------------- Carregar tipo órgão - criar alertas ----------------
 async function addOptionsTipoOrgao() {
   try {
     const res = await api.getTipoOrgao();
@@ -46,12 +57,29 @@ async function addOptionsTipoOrgao() {
   }
 }
 
+// ---------------- Carregar tipo órgão - filtros --------------------
+
+async function addOptionsTipoOrgaoFiltro() {
+  try {
+        const res = await api.getTipoOrgao();
+    const container = document.getElementById("fTipoOrgao");
+
+    let html = container.innerHTML; // mantém o "Todos" que já existe
+
+    res.forEach((tp) => {
+      html += `<option value="${tp}">${tp}</option>`;
+    });
+
+    container.innerHTML = html;
+  } catch (error) {
+    console.warn("Erro ao carregar tipos de órgãos:", error);
+  }
+}
+
 // ---------------- Sair ----------------
 
 document.getElementById("botaoSair").addEventListener("click", () => {
-  api.logout().finally(() =>{
-      window.location.href = "../login/index.html";
-    })
+  api.logout();
 });
 
 // ---------------- Abrir modal ----------------
@@ -62,12 +90,23 @@ document.getElementById("btnNovoAlerta").addEventListener("click", () => {
 // ---------------- Filtros básicos ----------------
 document.getElementById("formFiltros").addEventListener("submit", (e) => {
   e.preventDefault();
-  document.getElementById("tabelaAlertas").classList.add("table-striped");
-  setTimeout(
-    () => document.getElementById("tabelaAlertas").classList.remove("table-striped"),
-    800
-  );
+
+  api.getAlerts({
+    status: document.getElementById("fStatus").value || null, 
+    inicio: document.getElementById("fDataInicio").value || null, 
+    fim: document.getElementById("fDataFim").value || null, 
+    tipoOrgao: document.getElementById("fTipoOrgao").value || null
+  }).then(res => {
+    console.log('teste ', res);
+    tbody.innerHTML = ''
+    res.forEach(linha => {
+      tbody.prepend(renderRow(linha));
+    })
+  }).catch(error => {
+    console.warn('Erro ao buscar alertas: ', error);
+  })
 });
+
 document.getElementById("btnLimparFiltros").addEventListener("click", () => {
   document.getElementById("formFiltros").reset();
 });
@@ -92,8 +131,10 @@ function syncDisparo() {
   if (chkInstant.checked) {
     inputData.value = "";
     inputData.disabled = true;
+    inputData.removeAttribute("required");
   } else {
     inputData.disabled = false;
+    inputData.setAttribute("required", "true");
   }
 }
 chkInstant.addEventListener("change", syncDisparo);
@@ -148,7 +189,7 @@ function initDropdownOrgaos() {
 addOptionsTipoOrgao().then(() => initDropdownOrgaos());
 
 // --------- Tabela demo / ações -------------------------
-const tbody = document.querySelector("#tabelaAlertas tbody");
+const tbody = document.getElementById("tbodyAlert");
 
 const seed = [
   {
@@ -176,15 +217,19 @@ const seed = [
 function renderRow(a) {
   const tr = document.createElement("tr");
   tr.innerHTML = `
-        <td>${a.data}</td>
+        <td>${dataFormatada(a.dataCriacao)}</td>
         <td class="fw-semibold">${a.titulo}</td>
-        <td>${a.desc}</td>
-        <td>${a.resp}</td>
+        <td>${limitarPalavras(a.descricao, 60)}</td>
+        <td>${a.alertasOrgaos.join(", ")}</td>
         <td>
           ${
             a.status == "FINALIZADO"
-              ? '<span class="badge rounded-pill badge-inativo">' + a.status + "</span>"
-              : '<span class="badge rounded-pill badge-ativo">' + a.status + "</span>"
+              ? '<span class="badge rounded-pill badge-inativo">' +
+                a.status +
+                "</span>"
+              : '<span class="badge rounded-pill badge-ativo">' +
+                a.status +
+                "</span>"
           }
         </td>
         <td class="text-center">
@@ -201,53 +246,96 @@ function renderRow(a) {
                 <i class="bi bi-eye"></i>
             </button>
         </td>`;
-  tbody.prepend(tr);
+  return tr;
 }
-seed.forEach(renderRow);
 
-// --------- Salvar / Finalizar (protótipo) --------------
-function coletarAlerta(salvar) {
+// --------- Salvar / Finalizar --------------
+async function coletarAlerta(salvar) {
   const tipo = document.querySelector('input[name="aTipo"]:checked')?.value;
   const tipoOrgaos = document.getElementById("orgao_todos").checked
-    ? "TODOS"
+    ? ["TODOS"]
     : [...document.querySelectorAll(".orgao-item")]
         .filter((i) => i.checked)
-        .map((i) => i.value)
-        .join(", ");
+        .map((i) => i.value);
 
-  return {
-    titulo: document.getElementById("aTitulo").value.trim(),
-    desc: document.getElementById("aDescricao").value.trim(),
-    tipo,
-    resp: tipoOrgaos,
-    instantaneo: chkInstant.checked,
-    quando: inputData.value,
-    vigencia: inputVigencia.value,
-    status: salvar === true ? "EM_ELABORACAO" : "VIGENTE",
-    data: new Date().toLocaleString(),
-  };
+  try {
+    let usuario = await api.getUsuLogado();
+
+    console.log(tipoOrgaos);
+
+    return {
+      titulo: document.getElementById("aTitulo").value.trim(),
+      descricao: document.getElementById("aDescricao").value.trim(),
+      tipoAlerta: tipo,
+      dtDisparo: inputData.value,
+      instantaneo: chkInstant.checked,
+      vigenciaFim: inputVigencia.value,
+      tipoOrgao: tipoOrgaos,
+      status: salvar === true ? "EM_ELABORACAO" : "VIGENTE",
+      fk_usuario_criador: usuario.id,
+    };
+  } catch (error) {
+    console.warn("erro ao salvar o alerta! ", error);
+  }
 }
 
 document.getElementById("btnSalvar").addEventListener("click", () => {
-  const alerta = coletarAlerta(true);
-  renderRow(alerta);
-  toast("toastOK").show();
+  if (
+    !document.getElementById("aTitulo").value.trim() ||
+    !document.getElementById("aDescricao").value.trim() ||
+    (!inputData.value && !chkInstant.checked)
+  ) {
+    document.getElementById("formAlerta").reportValidity();
+    return;
+  }
+
+  coletarAlerta(true)
+    .then((result) => {
+      api
+        .createAlert(result)
+        .then((res) => {
+          tbody.prepend(renderRow(res));
+          toast("toastOK").show();
+        })
+        .catch((error) => {
+          console.warn("erro ao salvar o alerta! ", error);
+        });
+    })
+    .catch((error) => {
+      console.warn("erro ao salvar o alerta! ", error);
+    });
 });
 
 document.getElementById("formAlerta").addEventListener("submit", (e) => {
   e.preventDefault();
   if (
     !document.getElementById("aTitulo").value.trim() ||
-    !document.getElementById("aDescricao").value.trim()
+    !document.getElementById("aDescricao").value.trim() ||
+    (!inputData.value && !chkInstant.checked)
   ) {
     document.getElementById("formAlerta").reportValidity();
     return;
   }
-  const alerta = coletarAlerta(false);
-  renderRow(alerta);
-  bootstrap.Modal.getInstance(document.getElementById("modalCriarAlerta")).hide();
-  toast("toastFinalizado").show();
-  limparForm();
+
+  coletarAlerta(false)
+    .then((result) => {
+      api
+        .createAlert(result)
+        .then((res) => {
+          tbody.prepend(renderRow(res));
+          bootstrap.Modal.getInstance(
+            document.getElementById("modalCriarAlerta")
+          ).hide();
+          toast("toastFinalizado").show();
+          limparForm();
+        })
+        .catch((error) => {
+          console.warn("erro ao salvar o alerta! ", error);
+        });
+    })
+    .catch((error) => {
+      console.warn("erro ao salvar o alerta! ", error);
+    });
 });
 
 document.getElementById("btnCancelar").addEventListener("click", () => {

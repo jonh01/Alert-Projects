@@ -35,14 +35,14 @@ export function initDB() {
         nome: "DPGE_DEFENSOR",
         matricula: "DPGE_DEFENSOR",
         senha: 123456,
-        tipoUsuario: 'ADM'
+        tipoUsuario: "ADM",
       },
       {
         id: 2,
         nome: "jorginho Capivara",
         matricula: "0001",
         senha: 123456,
-        tipoUsuario: 'USUARIO'
+        tipoUsuario: "USUARIO",
       },
     ]);
   }
@@ -51,22 +51,22 @@ export function initDB() {
       {
         id: 1,
         fk_usuario: 1,
-        fk_orgao: 1
+        fk_orgao: 1,
       },
       {
         id: 2,
         fk_usuario: 1,
-        fk_orgao: 2
+        fk_orgao: 2,
       },
       {
         id: 3,
         fk_usuario: 1,
-        fk_orgao: 3
+        fk_orgao: 3,
       },
       {
         id: 4,
         fk_usuario: 2,
-        fk_orgao: 2
+        fk_orgao: 2,
       },
     ]);
   if (!localStorage.getItem("alertas")) save("alertas", []);
@@ -90,13 +90,16 @@ export const api = {
     return tiposUnicos;
   },
 
-  async getAlerts({ status, inicio, fim } = {}) {
+  async getAlerts({ status, inicio, fim, tipoOrgao } = {}) {
     let alerts = load("alertas");
+    const alertaTipoOrgao = load("alertaTipoOrgao");
 
+    // filtro por status
     if (status && status !== "TODOS") {
       alerts = alerts.filter((a) => a.status === status);
     }
 
+    // filtro por intervalo de datas
     if (inicio && fim) {
       const ini = new Date(inicio);
       const fi = new Date(fim);
@@ -106,7 +109,30 @@ export const api = {
       });
     }
 
-    return alerts.sort(
+        // filtro por órgão (se passado)
+    if (tipoOrgao && tipoOrgao !== "TODOS") {
+      // garante que sempre trabalha com array
+      const tipos = Array.isArray(tipoOrgao) ? tipoOrgao : [tipoOrgao];
+
+      alerts = alerts.filter((a) => {
+        const rels = alertaTipoOrgao.filter((rel) => rel.alertaId === a.id);
+        return rels.some((rel) => tipos.includes(rel.tipoOrgao));
+      });
+    }
+
+    // enriquecer cada alerta com os órgãos relacionados
+    const enriched = alerts.map((a) => {
+      const relacionados = alertaTipoOrgao
+        .filter((o) => o.alertaId === a.id)
+        .map((o) => o.tipoOrgao);
+      return {
+        ...a,
+        alertasOrgaos: relacionados.length ? relacionados : [],
+      };
+    });
+
+    // ordenar por data
+    return enriched.sort(
       (a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao)
     );
   },
@@ -115,7 +141,7 @@ export const api = {
     titulo,
     descricao,
     tipoAlerta,
-    horarioDisparo,
+    dtDisparo,
     instantaneo,
     vigenciaFim,
     tipoOrgao,
@@ -128,9 +154,7 @@ export const api = {
       titulo,
       descricao,
       tipoAlerta,
-      horarioDisparo: horarioDisparo
-        ? new Date(horarioDisparo).toISOString()
-        : null,
+      dtDisparo: dtDisparo ? new Date(dtDisparo).toISOString() : null,
       instantaneo: !!instantaneo,
       vigenciaFim: vigenciaFim ? new Date(vigenciaFim).toISOString() : null,
       status,
@@ -140,9 +164,12 @@ export const api = {
     alerts.push(alerta);
     save("alertas", alerts);
 
+    let alerO = [];
+
     if (Array.isArray(tipoOrgao)) {
       const alertaTipoOrgao = load("alertaTipoOrgao");
       tipoOrgao.forEach((tpO) => {
+        alerO.push(tpO);
         alertaTipoOrgao.push({
           id: Date.now() + Math.random(),
           alertaId: alerta.id,
@@ -152,7 +179,7 @@ export const api = {
       save("alertaTipoOrgao", alertaTipoOrgao);
     }
 
-    return alerta;
+    return {...alerta, alertasOrgaos: alerO};
   },
 
   async finalizarAlert(id) {
@@ -215,8 +242,8 @@ export const api = {
         usuarioOrgaos: usuarioOrgaos
           .filter((uo) => uo.fk_usuario === usu.id)
           .map((uo) => ({
-             ...uo,
-             orgao: orgaos.find((o) => o.id === uo.fk_orgao),
+            ...uo,
+            orgao: orgaos.find((o) => o.id === uo.fk_orgao),
           })),
       };
 

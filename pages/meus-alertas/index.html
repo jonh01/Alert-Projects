@@ -48,23 +48,29 @@
   </style>
 </head>
 <body>
-  <!-- Header -->
+
+    <!-- Header (simplificado para o protótipo) -->
   <header class="app-header">
     <div class="container d-flex align-items-center justify-content-between">
       <div class="brand d-flex align-items-center gap-2">
-        <i class="bi bi-megaphone"></i>
+        <i class="bi bi-grid-3x3-gap-fill"></i>
         <span>VERDE • Meus Alertas</span>
       </div>
       <div class="d-flex align-items-center gap-3">
+        <a href="https://wiki.verde.rj.def.br" target="_blank" class="text-white text-decoration-none"><i
+            class="bi bi-book"></i> Wiki</a>
         <div class="dropdown">
           <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="bi bi-person-circle"></i> Usuário
+            <i class="bi bi-person-circle" id="usuLogado"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Perfil</a></li>
-            <li><a class="dropdown-item" href="teste2.html">Gestão de Alertas</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Sair</a></li>
+            <div id="redirectGestao" >
+                <li><a class="dropdown-item" href="../gerenciar-alertas/index.html">Gestão de Alertas</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </div>
+            </li>
+            <li><a class="dropdown-item" id="botaoSair" href="../login/index.html">Sair</a></li>
           </ul>
         </div>
       </div>
@@ -140,53 +146,7 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="./index.js"></script>
 
-  <script>
-    const tbody = document.querySelector('#tabelaAlertas tbody');
-
-    // Mock de alertas
-    const seed = [
-      {data:'2025-03-23 14:40', titulo:'Ressalva de Atendimento', desc:'Alerta para recepção e triagem.', vigente:true, ciencia:false},
-      {data:'2025-03-24 09:10', titulo:'Plantão Diurno', desc:'Ajustes de atendimento em Resende/Barra Mansa.', vigente:true, ciencia:true},
-      {data:'2025-03-20 18:05', titulo:'Ação Social 3', desc:'Comunicado de rotina.', vigente:false, ciencia:true},
-    ];
-
-    function renderRow(a){
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${a.data}</td>
-        <td class="fw-semibold">${a.titulo}</td>
-        <td>${a.desc}</td>
-        <td>${a.vigente 
-          ? '<span class="badge rounded-pill badge-ativo">SIM</span>' 
-          : '<span class="badge rounded-pill badge-inativo">NÃO</span>'}
-        </td>
-        <td>
-          ${a.ciencia 
-            ? '<i class="bi bi-check2-circle text-success"></i> Estou Ciente' 
-            : '<button class="btn btn-sm btn-outline-success btnCiente"><i class="bi bi-check2"></i> Estou Ciente</button>'}
-        </td>`;
-      
-      // ação "Estou Ciente"
-      const btn = tr.querySelector('.btnCiente');
-      if(btn){
-        btn.addEventListener('click', () => {
-          a.ciencia = true;
-          tr.querySelector('td:last-child').innerHTML = '<i class="bi bi-check2-circle text-success"></i> Estou Ciente';
-        });
-      }
-      tbody.appendChild(tr);
-    }
-    seed.forEach(renderRow);
-
-    // Filtros (demo)
-    document.getElementById('formFiltros').addEventListener('submit', (e) => {
-      e.preventDefault();
-      alert('Filtro aplicado (protótipo)');
-    });
-    document.getElementById('btnLimparFiltros').addEventListener('click', () => {
-      document.getElementById('formFiltros').reset();
-    });
-  </script>
 </body>
 </html>
