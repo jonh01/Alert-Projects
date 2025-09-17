@@ -101,7 +101,7 @@
             class="bi bi-book"></i> Wiki</a>
         <div class="dropdown">
           <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="bi bi-person-circle"></i> Alterar-para-variavel
+            <i class="bi bi-person-circle" id="usuLogado"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="teste.html">Meus Alertas</a></li>
@@ -244,14 +244,12 @@
                     data-bs-toggle="dropdown" id="btnOrgaos">
 
                   </button>
-                  <div class="dropdown-menu" aria-labelledby="btnOrgaos">
+                  <div class="dropdown-menu" aria-labelledby="btnOrgaos" id="tipoOrgaoDinamico">
                     <div class="form-check ms-1">
                       <input class="form-check-input" type="checkbox" value="todos" id="orgao_todos" checked>
                       <label class="form-check-label fw-semibold" for="orgao_todos">Todos</label>
                     </div>
                     <hr class="my-2">
-                    <div id="tipoOrgaoDinamico">
-                    </div>
                   </div>
                 </div>
               </div>

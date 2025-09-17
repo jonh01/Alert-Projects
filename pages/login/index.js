@@ -11,8 +11,11 @@ function logar(event) {
     const senha = document.getElementById("passwordInput").value;
 
     api.login({matricula, senha}).then(res => {
+
         console.log('Login bem-sucedido!', res);
-        window.location.href = "../gerenciar-alertas/index.html";
+        res.tipoUsuario.includes("ADM")?
+            window.location.href = "../gerenciar-alertas/index.html": 
+            window.location.href = "../meus-alertas/index.html";
     }).catch((error) => {
         document.getElementById("toastLoginConteudo").innerText = error.message;
         meuToast.show();
