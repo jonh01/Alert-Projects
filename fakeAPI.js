@@ -109,7 +109,7 @@ export const api = {
       });
     }
 
-        // filtro por órgão (se passado)
+    // filtro por órgão (se passado)
     if (tipoOrgao && tipoOrgao !== "TODOS") {
       // garante que sempre trabalha com array
       const tipos = Array.isArray(tipoOrgao) ? tipoOrgao : [tipoOrgao];
@@ -135,6 +135,51 @@ export const api = {
     return enriched.sort(
       (a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao)
     );
+  },
+
+  async getAlertsParaUsuario() {
+    const usuarioLogado = await this.getUsuLogado();
+    if (!usuarioLogado) return [];
+
+    const tiposOrgaoDoUsuario = usuarioLogado.usuarioOrgaos.map(
+      (uo) => uo.orgao.tipoOrgao
+    );
+
+    const todosAlertas = load("alertas");
+    const alertasTipoOrgao = load("alertaTipoOrgao");
+    const logsVisualizacao = load("logsVisualizacao");
+
+    const idsAlertasVistos = logsVisualizacao
+      .filter((log) => log.usuarioId === usuarioLogado.id)
+      .map((log) => log.alertaId);
+
+    const alertasNaoVistos = todosAlertas.filter(
+      (alerta) => !idsAlertasVistos.includes(alerta.id)
+    );
+
+    const agora = new Date();
+    const alertasFiltrados = alertasNaoVistos.filter((alerta) => {
+      if (alerta.status !== "VIGENTE") return false;
+      const fimVigencia = alerta.vigenciaFim
+        ? new Date(alerta.vigenciaFim)
+        : null;
+      if (fimVigencia && fimVigencia < agora) return false;
+      const inicioDisparo = alerta.dtDisparo
+        ? new Date(alerta.dtDisparo)
+        : null;
+      if (inicioDisparo && inicioDisparo > agora) return false;
+
+      const tiposOrgaoDoAlerta = alertasTipoOrgao
+        .filter((ato) => ato.alertaId === alerta.id)
+        .map((ato) => ato.tipoOrgao);
+
+      if (tiposOrgaoDoAlerta.length === 0) return true;
+      return tiposOrgaoDoAlerta.some((tipo) =>
+        tiposOrgaoDoUsuario.includes(tipo)
+      );
+    });
+
+    return alertasFiltrados;
   },
 
   async createAlert({
@@ -171,7 +216,7 @@ export const api = {
       tipoOrgao.forEach((tpO) => {
         alerO.push(tpO);
         alertaTipoOrgao.push({
-          id: Date.now() + Math.random(),
+          id: crypto.randomUUID(),
           alertaId: alerta.id,
           tipoOrgao: tpO,
         });
@@ -179,7 +224,17 @@ export const api = {
       save("alertaTipoOrgao", alertaTipoOrgao);
     }
 
-    return {...alerta, alertasOrgaos: alerO};
+    // LINHA ADICIONADA PARA O SSE SIMULADO
+    localStorage.setItem(
+        "__sse_new_alert_event__",
+        JSON.stringify({
+            id: crypto.randomUUID(),
+            idAlerta: alerta.id,
+            timestamp: Date.now(),
+        })
+    );
+
+    return { ...alerta, alertasOrgaos: alerO };
   },
 
   async finalizarAlert(id) {
