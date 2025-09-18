@@ -102,6 +102,7 @@ document.getElementById("formFiltros").addEventListener("submit", (e) => {
       tbody.innerHTML = "";
       res.forEach((linha) => {
         tbody.prepend(renderRow(linha));
+        addFuncaoBtnAviso(linha);
       });
     })
     .catch((error) => {
@@ -201,31 +202,113 @@ function renderRow(a) {
         <td>${limitarPalavras(a.descricao, 60)}</td>
         <td>${a.alertasOrgaos.join(", ")}</td>
         <td>
-          ${
-            a.status == "FINALIZADO"
-              ? '<span class="badge rounded-pill badge-inativo">' +
-                a.status +
-                "</span>"
-              : '<span class="badge rounded-pill badge-ativo">' +
-                a.status +
-                "</span>"
-          }
+          ${a.status == "FINALIZADO"
+      ? '<span class="badge rounded-pill badge-inativo">' +
+      a.status +
+      "</span>"
+      : '<span class="badge rounded-pill badge-ativo">' +
+      a.status +
+      "</span>"
+    }
         </td>
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-outline-secondary m-1" title="Editar">
+            <button type="button" id="btnEditarAlerta-${a.id}" class="btn btn-sm btn-outline-secondary m-1" title="Editar">
                 <i class="bi bi-pencil-square"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-warning m-1 btnEncerrar" title="Encerrar">
+            <button type="button" id="btnEncerrarAlerta-${a.id}" class="btn btn-sm btn-outline-warning m-1 btnEncerrar" title="Encerrar">
                 <i class="bi bi-x-octagon"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-danger m-1 btnExcluir" title="Excluir">
+            <button type="button" id="btnExcluirAlerta-${a.id}" class="btn btn-sm btn-outline-danger m-1 btnExcluir" title="Excluir">
                 <i class="bi bi-trash"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-primary m-1 btnVisualizar" title="Visualizar">
+            <button type="button" id="btnVisualizarAlerta-${a.id}" class="btn btn-sm btn-outline-primary m-1 btnVisualizar" title="Visualizar">
                 <i class="bi bi-eye"></i>
             </button>
         </td>`;
+
   return tr;
+
+}
+
+// --------- Chamada dos Botões dos Alertas ----------
+
+function addFuncaoBtnAviso(a) {
+  // === EDITAR ===
+  document
+    .getElementById(`btnEditarAlerta-${a.id}`)
+    .addEventListener("click", () => {
+      // Preenche os campos do modal
+      document.getElementById("aTitulo").value = a.titulo || "";
+      document.getElementById("aDescricao").value = a.descricao || "";
+
+      // Tipo de alerta (radio buttons)
+      if (a.tipoAlerta) {
+        const radio = document.querySelector(
+          `input[name="aTipo"][value="${a.tipoAlerta.toLowerCase()}"]`
+        );
+        if (radio) radio.checked = true;
+      }
+
+      // Data/hora do disparo
+      document.getElementById("aData").value = a.dtDisparo || "";
+
+      // Instantâneo
+      document.getElementById("aInstantaneo").checked = !!a.instantaneo;
+
+      // Vigência
+      document.getElementById("aVigencia").value = a.vigenciaFim || "";
+
+      // Tipo de Órgão (checkboxes)
+      if (Array.isArray(a.alertasOrgaos) && a.alertasOrgaos.length > 0) {
+        // desmarca todos primeiro
+        document.querySelectorAll(".orgao-item").forEach((el) => {
+          el.checked = false;
+        });
+
+        if (a.alertasOrgaos.includes("TODOS")) {
+          document.getElementById("orgao_todos").checked = true;
+          document.querySelectorAll(".orgao-item").forEach((el) => {
+            el.checked = true;
+          });
+        } else {
+          a.alertasOrgaos.forEach((tp) => {
+            const cb = document.getElementById(tp);
+            if (cb) cb.checked = true;
+          });
+        }
+      }
+
+      // === Regras de negócio (mantém consistência visual) ===
+      updateVigenciaState(); // habilita/desabilita vigência
+      syncDisparo();         // ajusta instantâneo/data
+      refreshLabel();        // atualiza label do dropdown
+
+      // Exibe o modal
+      bootstrap.Modal.getOrCreateInstance(
+        document.getElementById("modalCriarAlerta")
+      ).show();
+    });
+
+  // === ENCERRAR ===
+  document
+    .getElementById(`btnEncerrarAlerta-${a.id}`)
+    .addEventListener("click", () => {
+      console.log("Encerrar alerta", a.id);
+    });
+
+  // === EXCLUIR ===
+  document
+    .getElementById(`btnExcluirAlerta-${a.id}`)
+    .addEventListener("click", () => {
+      console.log("Excluir alerta", a.id);
+    });
+
+  // === VISUALIZAR ===
+  document
+    .getElementById(`btnVisualizarAlerta-${a.id}`)
+    .addEventListener("click", () => {
+      console.log("Visualizar alerta", a.id);
+    });
 }
 
 // --------- Salvar / Finalizar --------------
@@ -234,8 +317,8 @@ async function coletarAlerta(salvar) {
   const tipoOrgaos = document.getElementById("orgao_todos").checked
     ? ["TODOS"]
     : [...document.querySelectorAll(".orgao-item")]
-        .filter((i) => i.checked)
-        .map((i) => i.value);
+      .filter((i) => i.checked)
+      .map((i) => i.value);
 
   try {
     let usuario = await api.getUsuLogado();
@@ -312,6 +395,7 @@ document.getElementById("btnSalvar").addEventListener("click", () => {
           }
 
           tbody.prepend(renderRow(res));
+          addFuncaoBtnAviso(res);
 
           toast("toastOK").show();
 
@@ -336,6 +420,7 @@ document.getElementById("formAlerta").addEventListener("submit", (e) => {
         .createAlert(result)
         .then((res) => {
           tbody.prepend(renderRow(res));
+          addFuncaoBtnAviso(res);
           bootstrap.Modal.getInstance(
             document.getElementById("modalCriarAlerta")
           ).hide();
@@ -350,6 +435,13 @@ document.getElementById("formAlerta").addEventListener("submit", (e) => {
       console.warn("erro ao salvar o alerta! ", error);
     });
 });
+
+// Quando o modal fechar de qualquer forma, limpa o formulário
+document
+  .getElementById("modalCriarAlerta")
+  .addEventListener("hidden.bs.modal", () => {
+    limparForm();
+  });
 
 document.getElementById("btnCancelar").addEventListener("click", () => {
   limparForm();
