@@ -296,7 +296,7 @@
               <i class="bi bi-save2 me-1"></i>Salvar
             </button>
             <button class="btn btn-verde" type="submit" id="btnFinalizar">
-              <i class="bi bi-send-check me-1"></i>Finalizar
+              <i class="bi bi-send-check me-1"></i>Publicar
             </button>
           </div>
         </form>
@@ -304,23 +304,49 @@
     </div>
   </div>
 
-  <!-- Toasts -->
-  <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
-    <div id="toastOK" class="toast align-items-center text-bg-success border-0" role="alert">
-      <div class="d-flex">
-        <div class="toast-body">✅ Alerta salvo com sucesso.</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
-    </div>
-    <div id="toastFinalizado" class="toast align-items-center text-bg-primary border-0 mt-2" role="alert">
-      <div class="d-flex">
-        <div class="toast-body">
-          🚀 Alerta finalizado e lançado/programado.
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
+<!-- Toasts -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
+  <!-- Salvo com sucesso -->
+  <div id="toastOK" class="toast align-items-center text-bg-success border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">✅ Alerta salvo com sucesso.</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
   </div>
+
+  <!-- Finalizado -->
+  <div id="toastFinalizado" class="toast align-items-center text-bg-primary border-0 mt-2" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">🚀 Alerta publicado/programado.</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+
+  <!-- Encerrado -->
+  <div id="toastEncerrado" class="toast align-items-center text-bg-warning border-0 mt-2" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">⚠️ Alerta encerrado com sucesso.</div>
+      <button type="button" class="btn-close btn-close-dark me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+
+  <!-- Excluído -->
+  <div id="toastExcluido" class="toast align-items-center text-bg-danger border-0 mt-2" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">🗑️ Alerta excluído com sucesso.</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+
+  <!-- Erro -->
+  <div id="toastErro" class="toast align-items-center text-bg-dark border-0 mt-2" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">❌ Operação não permitida para este alerta.</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
 
   <!-- Avisos -->
   <!-- Container para modais -->

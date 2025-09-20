@@ -90,28 +90,25 @@
       <div class="card-body">
         <form id="formFiltros" class="row g-3 align-items-end">
           <div class="col-12 col-md-4">
-            <label class="form-label">Data (início)</label>
-            <input type="date" class="form-control" id="fDataInicio">
+            <label class="form-label">Data do alerta (início)</label>
+            <input type="date" class="form-control" id="fDataInicio" />
           </div>
           <div class="col-12 col-md-4">
             <label class="form-label">Até</label>
-            <input type="date" class="form-control" id="fDataFim">
+            <input type="date" class="form-control" id="fDataFim" />
           </div>
           <div class="col-12 col-md-4">
             <label class="form-label">Tipo de Órgão</label>
             <select id="fTipoOrgao" class="form-select">
-              <option value="TODOS" selected>TODOS</option>
-              <option value="NPA">NÚCLEO DE PRIMEIRO ATENDIMENTO</option>
-              <option value="AS3">AÇÃO SOCIAL 3</option>
-              <option value="PLANTAO">PLANTÃO DIURNO</option>
+              <option value="TODOS" selected>Todos</option>
             </select>
           </div>
           <div class="col-12 col-md-4">
             <label class="form-label">Status</label>
             <select id="fStatus" class="form-select">
-              <option value="ATIVOS" selected>ATIVOS</option>
-              <option value="INATIVOS">INATIVOS</option>
-              <option value="AMBOS">AMBOS</option>
+              <option value="TODOS" selected>Todos</option>
+              <option value="VIGENTE">Vigentes</option>
+              <option value="FINALIZADO">Finalizados</option>
             </select>
           </div>
           <div class="col-12 col-md-8 d-flex gap-2 justify-content-md-end">
@@ -119,7 +116,7 @@
               <i class="bi bi-search"></i> Buscar
             </button>
             <button type="button" class="btn btn-outline-secondary" id="btnLimparFiltros">
-              Cancelar
+              Limpar Seleção
             </button>
           </div>
         </form>
@@ -133,11 +130,13 @@
           <table class="table table-hover align-middle mb-0" id="tabelaAlertas">
             <thead>
               <tr>
-                <th style="width:120px;">Data</th>
-                <th style="width:200px;">Título</th>
+                <th style="width: 150px">Data e Hora</th>
+                <th style="width:210px;">Título</th>
                 <th>Descrição</th>
+                <th style="width: 180px">Publico Alvo</th>
                 <th style="width:120px;">Status</th>
                 <th style="width:150px;">Ciência</th>
+                <th style="width:80px;" class="text-center">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -154,6 +153,27 @@
 
     <!-- Container para toasts -->
     <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+    <!-- Toasts -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
+      <!-- Salvo com sucesso -->
+      <div id="toastOK" class="toast align-items-center text-bg-success border-0" role="alert">
+        <div class="d-flex">
+          <div class="toast-body">✅ Ciência Marcada com Sucesso!</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+
+      <!-- Erro -->
+      <div id="toastErro" class="toast align-items-center text-bg-dark border-0 mt-2" role="alert">
+        <div class="d-flex">
+          <div class="toast-body">❌ Operação não permitida para este alerta.</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    </div>
+    </div>
+
   </main>
 
   <!-- Bootstrap JS -->

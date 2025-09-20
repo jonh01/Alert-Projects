@@ -1,4 +1,5 @@
 import { api } from "./fakeAPI.js";
+import { criaModalAlerta } from "./utils.js";
 
 // Envolvemos nosso código em uma IIFE para não poluir o escopo global
 (function () {
@@ -23,24 +24,7 @@ import { api } from "./fakeAPI.js";
 
   // --- Renderizar Modal ---
   function renderizarModal(alerta) {
-    const modalEl = document.createElement("div");
-    modalEl.className = "modal fade";
-    modalEl.id = `alerta-${alerta.id}`;
-    modalEl.innerHTML = `
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">${alerta.titulo}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-          </div>
-          <div class="modal-body">
-            <p>${alerta.descricao}</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary btn-ciente">Ciente</button>
-          </div>
-        </div>
-      </div>`;
+    const modalEl =  criaModalAlerta(alerta);
     alertasContainer.appendChild(modalEl);
 
     const modalInstance = new bootstrap.Modal(modalEl);

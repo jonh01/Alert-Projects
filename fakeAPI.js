@@ -90,6 +90,17 @@ export const api = {
     return tiposUnicos;
   },
 
+  async getUsuTipoOrgao() {
+    const usuarioLogado = await this.getUsuLogado();
+    if (!usuarioLogado) return [];
+
+    const tiposOrgaoDoUsuario = [
+      ...new Set(usuarioLogado.usuarioOrgaos.map((uo) => uo.orgao.tipoOrgao)),
+    ];
+
+    return tiposOrgaoDoUsuario;
+  },
+
   async getAlerts({ status, inicio, fim, tipoOrgao } = {}) {
     let alerts = load("alertas");
     const alertaTipoOrgao = load("alertaTipoOrgao");
@@ -131,10 +142,103 @@ export const api = {
       };
     });
 
-    // ordenar por data
-    return enriched.sort(
-      (a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao)
-    );
+    // Define a ordem desejada
+    const ordemStatus = {
+      EM_ELABORACAO: 1,
+      VIGENTE: 2,
+      FINALIZADO: 3,
+    };
+
+    return enriched.sort((a, b) => {
+      // 1º: compara pelo status
+      const diffStatus = ordemStatus[a.status] - ordemStatus[b.status];
+      if (diffStatus !== 0) return diffStatus;
+
+      // 2º: se status for igual, compara pela data (mais recente primeiro)
+      return new Date(b.dataCriacao) - new Date(a.dataCriacao);
+    });
+  },
+
+  async getAlertsUsuario({ status, inicio, fim, tipoOrgao } = {}) {
+    const usuarioLogado = await this.getUsuLogado();
+    if (!usuarioLogado) return [];
+
+    let alerts = load("alertas");
+    const alertaTipoOrgao = load("alertaTipoOrgao");
+    const logsVisualizacao = load("logsVisualizacao");
+
+    // filtro por status
+    if (status && status !== "TODOS") {
+      alerts = alerts.filter(
+        (a) => a.status === status && a.status !== "EM_ELABORACAO"
+      );
+    } else {
+      alerts = alerts.filter((a) => a.status !== "EM_ELABORACAO");
+    }
+
+    // filtro por intervalo de datas
+    if (inicio && fim) {
+      const ini = new Date(inicio);
+      const fi = new Date(fim);
+      alerts = alerts.filter((a) => {
+        const dt = new Date(a.dataCriacao);
+        return dt >= ini && dt <= fi;
+      });
+    }
+
+    // filtro por órgão (se passado)
+    if (tipoOrgao) {
+      let tipos = [];
+
+      if (tipoOrgao === "TODOS") {
+        tipos = await this.getUsuTipoOrgao();
+        tipos.push("TODOS");
+      } else {
+        tipos = Array.isArray(tipoOrgao) ? tipoOrgao : [tipoOrgao];
+      }
+
+      alerts = alerts.filter((a) => {
+        const rels = alertaTipoOrgao.filter((rel) => rel.alertaId === a.id);
+        return rels.some((rel) => tipos.includes(rel.tipoOrgao));
+      });
+    }
+
+    // enriquecer cada alerta com os órgãos relacionados
+    alerts = alerts.map((a) => {
+      const relacionados = alertaTipoOrgao
+        .filter((o) => o.alertaId === a.id)
+        .map((o) => o.tipoOrgao);
+      return {
+        ...a,
+        alertasOrgaos: relacionados.length ? relacionados : [],
+      };
+    });
+
+    alerts = alerts.map((a) => {
+      const visualizado = logsVisualizacao.some(
+        (lv) => lv.alertaId === a.id && lv.usuarioId === usuarioLogado.id
+      );
+
+      return {
+        ...a,
+        visualizado,
+      };
+    });
+
+    // Define a ordem desejada
+    const ordemStatus = {
+      VIGENTE: 1,
+      FINALIZADO: 2,
+    };
+
+    return alerts.sort((a, b) => {
+      // 1º: compara pelo status
+      const diffStatus = ordemStatus[a.status] - ordemStatus[b.status];
+      if (diffStatus !== 0) return diffStatus;
+
+      // 2º: se status for igual, compara pela data (mais recente primeiro)
+      return new Date(b.dataCriacao) - new Date(a.dataCriacao);
+    });
   },
 
   async getAlertsParaUsuario() {
@@ -183,6 +287,7 @@ export const api = {
   },
 
   async createAlert({
+    id,
     titulo,
     descricao,
     tipoAlerta,
@@ -194,8 +299,14 @@ export const api = {
     fk_usuario_criador,
   }) {
     const alerts = load("alertas");
+
+    let alertaExistente = null;
+    if (id) {
+      alertaExistente = alerts.find((a) => a.id === id);
+    }
+
     const alerta = {
-      id: crypto.randomUUID(),
+      id: id || crypto.randomUUID(),
       titulo,
       descricao,
       tipoAlerta,
@@ -203,47 +314,90 @@ export const api = {
       instantaneo: !!instantaneo,
       vigenciaFim: vigenciaFim ? new Date(vigenciaFim).toISOString() : null,
       status,
-      dataCriacao: new Date().toISOString(),
+      // mantém a data original se já existia, senão cria nova
+      dataCriacao: alertaExistente
+        ? alertaExistente.dataCriacao
+        : new Date().toISOString(),
       fk_usuario_criador,
     };
-    alerts.push(alerta);
-    save("alertas", alerts);
 
     let alerO = [];
 
+    if (alertaExistente) {
+      // ---- UPDATE ----
+      const index = alerts.findIndex((a) => a.id === id);
+      alerts[index] = alerta;
+    } else {
+      // ---- INSERT ----
+      alerts.push(alerta);
+    }
+
+    save("alertas", alerts);
+
+    // ---- Relacionamento com tipos de órgãos ----
     if (Array.isArray(tipoOrgao)) {
       const alertaTipoOrgao = load("alertaTipoOrgao");
+
+      // Remove vínculos antigos se for update
+      const novos = alertaTipoOrgao.filter((ato) => ato.alertaId !== alerta.id);
+
       tipoOrgao.forEach((tpO) => {
         alerO.push(tpO);
-        alertaTipoOrgao.push({
+        novos.push({
           id: crypto.randomUUID(),
           alertaId: alerta.id,
           tipoOrgao: tpO,
         });
       });
-      save("alertaTipoOrgao", alertaTipoOrgao);
+
+      save("alertaTipoOrgao", novos);
     }
 
     // LINHA ADICIONADA PARA O SSE SIMULADO
-    localStorage.setItem(
-        "__sse_new_alert_event__",
-        JSON.stringify({
-            id: crypto.randomUUID(),
-            idAlerta: alerta.id,
-            timestamp: Date.now(),
-        })
-    );
+    // localStorage.setItem(
+    //   "__sse_new_alert_event__",
+    //   JSON.stringify({
+    //     id: crypto.randomUUID(),
+    //     idAlerta: alerta.id,
+    //     timestamp: Date.now(),
+    //   })
+    // );
 
     return { ...alerta, alertasOrgaos: alerO };
   },
 
+  async deleteAlert(id) {
+    let alerts = load("alertas");
+    alerts = alerts.filter((a) => a.id !== id);
+    save("alertas", alerts);
+
+    let alertaTipoOrgao = load("alertaTipoOrgao");
+    alertaTipoOrgao = alertaTipoOrgao.filter((rel) => rel.alertaId !== id);
+    save("alertaTipoOrgao", alertaTipoOrgao);
+
+    return true;
+  },
+
   async finalizarAlert(id) {
     const alerts = load("alertas");
+    const alertaTipoOrgao = load("alertaTipoOrgao");
     const alerta = alerts.find((a) => a.id === id);
+
     if (!alerta) throw new Error("Alerta não encontrado");
     alerta.status = "FINALIZADO";
     save("alertas", alerts);
-    return alerta;
+
+    const alerO = [
+      ...new Set(
+        alertaTipoOrgao
+          .filter((ato) => ato.alertaId === alerta.id)
+          .map((ato) => ato.tipoOrgao)
+      ),
+    ];
+
+    console.log(`teste`, alerO[0]);
+
+    return { ...alerta, alertasOrgaos: alerO };
   },
 
   async checkAlert(alertaId, usuarioId) {
