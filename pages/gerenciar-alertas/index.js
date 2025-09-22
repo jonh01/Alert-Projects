@@ -209,6 +209,7 @@ function renderRow(a) {
         <td class="fw-semibold">${a.titulo}</td>
         <td style="white-space: pre-wrap;">${limitarPalavras(a.descricao, 40)}</td>
         <td>${a.alertasOrgaos?a.alertasOrgaos.join(", "): ""}</td>
+        <td class="fw-semibold">${a.titulo}</td>
         <td>
           ${
             a.status == "FINALIZADO"
@@ -405,9 +406,7 @@ function exibirModalAlerta(alerta) {
 // --------- Salvar / Finalizar --------------
 async function coletarAlerta(salvar) {
   const tipo = document.querySelector('input[name="aTipo"]:checked')?.value;
-  const tipoOrgaos = document.getElementById("orgao_todos").checked
-    ? ["TODOS"]
-    : [...document.querySelectorAll(".orgao-item")]
+  const tipoOrgaos = [...document.querySelectorAll(".orgao-item")]
         .filter((i) => i.checked)
         .map((i) => i.value);
 

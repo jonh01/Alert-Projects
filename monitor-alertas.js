@@ -115,7 +115,7 @@ import { criaModalAlerta } from "./utils.js";
   function iniciarVerificacaoPeriodica() {
     setInterval(() => {
       verificarNovosAlertas(); // já filtra por dtDisparo e vigência
-    }, 60 * 1000); // verifica a cada 60 segundos
+    }, 60 * 10000); // verifica a cada 60 segundos
   }
 
   // --- Ponto de entrada ---

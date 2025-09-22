@@ -44,6 +44,13 @@ export function initDB() {
         senha: 123456,
         tipoUsuario: "USUARIO",
       },
+      {
+        id:3,
+        nome: "Rodrigol",
+        matricula: "0002",
+        senha: "123456",
+        tipoUsuario: "USUARIO"
+      },
     ]);
   }
   if (!localStorage.getItem("usuarioOrgaos"))
@@ -67,6 +74,16 @@ export function initDB() {
         id: 4,
         fk_usuario: 2,
         fk_orgao: 2,
+      },
+            {
+        id: 5,
+        fk_usuario: 3,
+        fk_orgao: 3,
+      },
+      {
+        id: 6,
+        fk_usuario: 3,
+        fk_orgao: 1,
       },
     ]);
   if (!localStorage.getItem("alertas")) save("alertas", []);
