@@ -58,3 +58,22 @@ export const criaModalAlerta = (alerta) => {
 
   return modalEl;
 };
+
+export const criaToastAlerta = (alerta) => {
+  const toastEl = document.createElement("div");
+  toastEl.className = "toast mt-2";
+  toastEl.id = `alerta-${alerta.id}`;
+  toastEl.setAttribute("role", "alert");
+  toastEl.setAttribute("aria-live", "assertive");
+  toastEl.setAttribute("aria-atomic", "true");
+  toastEl.innerHTML = `
+      <div class="toast-body">
+        ${alerta.titulo}
+        <div class="mt-2 pt-2 border-top">
+          <button type="button" class="btn btn-primary btn-sm">Ler mais</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="toast">Fechar</button>
+        </div>
+      </div>`;
+
+  return toastEl;
+};

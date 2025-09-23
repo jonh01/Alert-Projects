@@ -121,6 +121,7 @@ export const api = {
   async getAlerts({ status, inicio, fim, tipoOrgao } = {}) {
     let alerts = load("alertas");
     const alertaTipoOrgao = load("alertaTipoOrgao");
+    const usuarios = load("usuarios")
 
     // filtro por status
     if (status && status !== "TODOS") {
@@ -153,8 +154,11 @@ export const api = {
       const relacionados = alertaTipoOrgao
         .filter((o) => o.alertaId === a.id)
         .map((o) => o.tipoOrgao);
+      const usu = usuarios.filter((u) => u.id === a.fk_usuario_criador).map((u) => u.nome);
+
       return {
         ...a,
+        nome_usuario_criador: usu.toString(),
         alertasOrgaos: relacionados.length ? relacionados : [],
       };
     });

@@ -203,13 +203,14 @@ const tbody = document.getElementById("tbodyAlert");
 
 function renderRow(a) {
   const tr = document.createElement("tr");
+
   tr.id = `row-${a.id}`;
   tr.innerHTML = `
         <td>${dataFormatada(a.dataCriacao)}</td>
         <td class="fw-semibold">${a.titulo}</td>
         <td style="white-space: pre-wrap;">${limitarPalavras(a.descricao, 40)}</td>
         <td>${a.alertasOrgaos?a.alertasOrgaos.join(", "): ""}</td>
-        <td class="fw-semibold">${a.titulo}</td>
+        <td>${a.nome_usuario_criador}</td>
         <td>
           ${
             a.status == "FINALIZADO"

@@ -1,5 +1,5 @@
 import { api } from "./fakeAPI.js";
-import { criaModalAlerta } from "./utils.js";
+import { criaModalAlerta, criaToastAlerta } from "./utils.js";
 
 // Envolvemos nosso código em uma IIFE para não poluir o escopo global
 (function () {
@@ -43,29 +43,16 @@ import { criaModalAlerta } from "./utils.js";
 
   // --- Renderizar Toast ---
   function renderizarToast(alerta) {
-    const toastEl = document.createElement("div");
-    toastEl.className = "toast";
-    toastEl.id = `alerta-${alerta.id}`;
-    toastEl.setAttribute("role", "alert");
-    toastEl.setAttribute("aria-live", "polite");
-    toastEl.innerHTML = `
-      <div class="toast-header">
-        <strong class="me-auto">${alerta.titulo}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Fechar"></button>
-      </div>
-      <div class="toast-body">
-        ${alerta.descricao}
-        <div class="mt-2 pt-2 border-top">
-          <button type="button" class="btn btn-primary btn-sm btn-ciente">Ciente</button>
-        </div>
-      </div>`;
-    toastContainer.appendChild(toastEl);
+    const toastEl = criaToastAlerta(alerta);
+
+      // adiciona no container
+    document.querySelector("#toast-container").appendChild(toastEl);
 
     // Aqui criamos o toast e desabilitamos o autohide
     const toastInstance = new bootstrap.Toast(toastEl, { autohide: false });
 
     // Quando clicar em "Ciente", marca como lido e fecha
-    toastEl.querySelector(".btn-ciente").onclick = () =>
+    toastEl.querySelector(".btn-primary").onclick = () =>
       handleCheckAlert(alerta.id, toastInstance);
 
     // O X do toast ainda funciona normalmente
@@ -86,12 +73,11 @@ import { criaModalAlerta } from "./utils.js";
     if (document.getElementById(`alerta-${alerta.id}`)) return; // evita duplicados
     if (localStorage.getItem(`alerta_shown_${alerta.id}`)) return; // já mostrado
 
-    if (alerta.tipoAlerta.toLowerCase() === "modal") {
-      filaDeModais.push(alerta);
-      processarFilaDeModais();
     } else {
+    // }
+
+    if (alerta.tipoAlerta.toLowerCase() !== "modal") 
       renderizarToast(alerta);
-    }
   }
 
   // --- Buscar novos alertas ---
@@ -115,7 +101,7 @@ import { criaModalAlerta } from "./utils.js";
   function iniciarVerificacaoPeriodica() {
     setInterval(() => {
       verificarNovosAlertas(); // já filtra por dtDisparo e vigência
-    }, 60 * 10000); // verifica a cada 60 segundos
+    }, 60 * 1000); // verifica a cada 60 segundos
   }
 
   // --- Ponto de entrada ---
