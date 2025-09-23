@@ -73,7 +73,11 @@ import { criaModalAlerta, criaToastAlerta } from "./utils.js";
     if (document.getElementById(`alerta-${alerta.id}`)) return; // evita duplicados
     if (localStorage.getItem(`alerta_shown_${alerta.id}`)) return; // já mostrado
 
-    } else {
+    // if (alerta.tipoAlerta.toLowerCase() === "modal") {
+    //   filaDeModais.push(alerta);
+    //   processarFilaDeModais();
+    // } else {
+    //   renderizarToast(alerta);
     // }
 
     if (alerta.tipoAlerta.toLowerCase() !== "modal") 
