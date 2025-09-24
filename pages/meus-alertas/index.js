@@ -33,6 +33,18 @@ document.addEventListener("DOMContentLoaded", function () {
   addOptionsTipoOrgaoFiltro();
 });
 
+// Carregamento para modal pós login
+
+window.onload = () => {
+   const origem = document.referrer;
+
+      if (origem && origem.includes("/login/index.html")) {
+        
+      } else {
+        console.log("Usuário acessou diretamente ou origem está oculta.");
+      }
+};
+
 async function addOptionsTipoOrgaoFiltro() {
   try {
     const res = await api.getUsuTipoOrgao();

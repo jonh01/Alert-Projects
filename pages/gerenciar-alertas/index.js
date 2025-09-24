@@ -127,7 +127,7 @@ const inputVigencia = document.getElementById("aVigencia");
 
 function updateVigenciaState() {
   const tipo = document.querySelector('input[name="aTipo"]:checked')?.value;
-  const habilita = tipo === "modal" || tipo === "ambos";
+  const habilita = tipo === "MODAL" || tipo === "AMBOS";
   inputVigencia.disabled = !habilita;
   if (!habilita) inputVigencia.value = "";
 }
@@ -142,9 +142,11 @@ function syncDisparo() {
     inputData.value = "";
     inputData.disabled = true;
     inputData.removeAttribute("required");
+    document.getElementById("btnFinalizar").innerText = 'Publicar';
   } else {
     inputData.disabled = false;
     inputData.setAttribute("required", "true");
+    document.getElementById("btnFinalizar").innerText = 'Programar';
   }
 }
 chkInstant.addEventListener("change", syncDisparo);
@@ -270,8 +272,7 @@ function addFuncaoBtnAviso(a) {
   document
     .getElementById(`btnEditarAlerta-${a.id}`)
     .addEventListener("click", () => {
-      if (a.status !== "EM_ELABORACAO") {
-        // regra de negócio: só encerra se estiver VIGENTE
+      if (a.status === "VIGENTE" || a.status === 'FINALIZADO') {
         toast("toastErro").show();
         return;
       }
@@ -328,7 +329,7 @@ function addFuncaoBtnAviso(a) {
       }
 
       api
-        .finalizarAlert(a.id)
+        .alterarAlert(a.id, 'FINALIZADO')
         .then((updated) => {
           // Atualiza visual na tabela
           a.status = updated.status; // atualiza o objeto local
@@ -346,7 +347,7 @@ function addFuncaoBtnAviso(a) {
   document
     .getElementById(`btnExcluirAlerta-${a.id}`)
     .addEventListener("click", () => {
-      if (a.status !== "EM_ELABORACAO") {
+      if (a.status === "VIGENTE" || a.status === 'FINALIZADO') {
         // regra de negócio
         toast("toastErro").show();
         return;
@@ -415,6 +416,15 @@ async function coletarAlerta(salvar) {
     let usuario = await api.getUsuLogado();
     const form = document.getElementById("formAlerta");
 
+    let status = '';
+
+    if(salvar === true)
+      status = 'EM_ELABORACAO';
+    else if(chkInstant.checked)
+      status = 'VIGENTE';
+    else
+      status = 'PROGRAMADO_PARA_ENVIO';
+
     return {
       id: form.dataset.editId || null, // 👈 se tiver id, é edição
       titulo: document.getElementById("aTitulo").value.trim(),
@@ -424,7 +434,7 @@ async function coletarAlerta(salvar) {
       instantaneo: chkInstant.checked,
       vigenciaFim: inputVigencia.value,
       tipoOrgao: tipoOrgaos,
-      status: salvar === true ? "EM_ELABORACAO" : "VIGENTE",
+      status: status,
       fk_usuario_criador: usuario.id,
     };
   } catch (error) {
@@ -493,6 +503,7 @@ document.getElementById("btnSalvar").addEventListener("click", () => {
         })
         .catch((error) => {
           console.warn("erro ao salvar o alerta! ", error);
+          toast("toastErroSave").show();
         });
     })
     .catch((error) => {
@@ -519,6 +530,7 @@ document.getElementById("formAlerta").addEventListener("submit", (e) => {
         })
         .catch((error) => {
           console.warn("erro ao salvar o alerta! ", error);
+          toast("toastErroSave").show();
         });
     })
     .catch((error) => {

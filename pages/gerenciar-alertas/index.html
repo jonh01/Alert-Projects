@@ -178,6 +178,7 @@
                 <option value="VIGENTE">Vigentes</option>
                 <option value="FINALIZADO">Finalizados</option>
                 <option value="EM_ELABORACAO">Em Elaboração</option>
+                <option value="PROGRAMADO_PARA_ENVIO">Programado para Envio</option>
               </select>
             </div>
             <div class="col-12 col-md-8 d-flex gap-2 justify-content-md-end">
@@ -509,6 +510,24 @@
         <div class="d-flex">
           <div class="toast-body">
             ❌ Operação não permitida para este alerta.
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+          ></button>
+        </div>
+      </div>
+
+            <!-- Erro ao salvar Alerta -->
+      <div
+        id="toastErroSave"
+        class="toast align-items-center text-bg-dark border-0 mt-2"
+        role="alert"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            ❌ Operação não permitida para este alerta. O alerta não pode ser alterado!
           </div>
           <button
             type="button"

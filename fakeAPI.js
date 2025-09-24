@@ -166,8 +166,9 @@ export const api = {
     // Define a ordem desejada
     const ordemStatus = {
       EM_ELABORACAO: 1,
-      VIGENTE: 2,
-      FINALIZADO: 3,
+      PROGRAMADO_PARA_ENVIO: 2,
+      VIGENTE: 3,
+      FINALIZADO: 4,
     };
 
     return enriched.sort((a, b) => {
@@ -320,10 +321,15 @@ export const api = {
     fk_usuario_criador,
   }) {
     const alerts = load("alertas");
+    const usuarios = load("usuarios");
 
     let alertaExistente = null;
     if (id) {
       alertaExistente = alerts.find((a) => a.id === id);
+
+      if(alertaExistente.status === 'VIGENTE' || alertaExistente.status === 'FIALIZADO'){
+        throw new Error("Alerta não pode ser alterado!");
+      }
     }
 
     const alerta = {
@@ -384,7 +390,9 @@ export const api = {
     //   })
     // );
 
-    return { ...alerta, alertasOrgaos: alerO };
+    const usu = usuarios.filter((u) => u.id === alerta.fk_usuario_criador).map((u) => u.nome);
+
+    return { ...alerta, nome_usuario_criador: usu.toString(), alertasOrgaos: alerO };
   },
 
   async deleteAlert(id) {
@@ -399,13 +407,13 @@ export const api = {
     return true;
   },
 
-  async finalizarAlert(id) {
+  async alterarAlert(id, newStatus) {
     const alerts = load("alertas");
     const alertaTipoOrgao = load("alertaTipoOrgao");
     const alerta = alerts.find((a) => a.id === id);
 
     if (!alerta) throw new Error("Alerta não encontrado");
-    alerta.status = "FINALIZADO";
+    alerta.status = newStatus;
     save("alertas", alerts);
 
     const alerO = [
