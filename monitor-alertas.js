@@ -51,9 +51,9 @@ import { criaModalAlerta, criaToastAlerta } from "./utils.js";
     // Aqui criamos o toast e desabilitamos o autohide
     const toastInstance = new bootstrap.Toast(toastEl, { autohide: false });
 
-    // Quando clicar em "Ciente", marca como lido e fecha
+    // Quando clicar em "Ciente"
     toastEl.querySelector(".btn-primary").onclick = () =>
-      handleCheckAlert(alerta.id, toastInstance);
+      window.location.href = `/pages/meus-alertas/index.html?renderiza-modal=${alerta.id}`
 
     // O X do toast ainda funciona normalmente
     toastEl.addEventListener("hidden.bs.toast", () => toastEl.remove());
@@ -73,6 +73,8 @@ import { criaModalAlerta, criaToastAlerta } from "./utils.js";
     if (document.getElementById(`alerta-${alerta.id}`)) return; // evita duplicados
     if (localStorage.getItem(`alerta_shown_${alerta.id}`)) return; // já mostrado
 
+    const origem = document.referrer;
+
     // if (alerta.tipoAlerta.toLowerCase() === "modal") {
     //   filaDeModais.push(alerta);
     //   processarFilaDeModais();
@@ -80,13 +82,26 @@ import { criaModalAlerta, criaToastAlerta } from "./utils.js";
     //   renderizarToast(alerta);
     // }
 
-    if (alerta.tipoAlerta.toLowerCase() !== "modal") 
+    if (alerta.tipoAlerta.toLowerCase() === "popup") 
       renderizarToast(alerta);
+    else if(alerta.tipoAlerta.toLowerCase() === "modal"){
+      if (origem?.includes("/login/index.html")) {
+        console.log('abriu modal');
+      }
+    }
+    else if (alerta.tipoAlerta.toLowerCase() === "ambos"){
+      if (origem?.includes("/login/index.html")) {
+        console.log('abriu modal');
+      } else {
+        renderizarToast(alerta);
+      }
+    }
   }
 
   // --- Buscar novos alertas ---
   async function verificarNovosAlertas() {
     try {
+      await api.atualizaStatusProgramado();
       const alertas = await api.getAlertsParaUsuario();
       alertas.forEach(renderizarAlerta);
     } catch (error) {
@@ -111,7 +126,7 @@ import { criaModalAlerta, criaToastAlerta } from "./utils.js";
   // --- Ponto de entrada ---
   document.addEventListener("DOMContentLoaded", () => {
     verificarNovosAlertas(); // inicial
-    window.addEventListener("storage", handleStorageChange); // SSE fake
+    // window.addEventListener("storage", handleStorageChange); // SSE fake 
     iniciarVerificacaoPeriodica(); // verifica alertas futuros
   });
 })();

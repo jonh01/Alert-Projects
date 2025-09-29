@@ -20,6 +20,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
       console.log(res);
       document.getElementById("usuLogado").innerText = ` ${res.nome}`;
+      buscar();
+
+      const params = new URLSearchParams(window.location.search);
+      const renderiza = params.get("renderiza-modal");
+
+      if (renderiza) {
+        api
+          .getAlert(renderiza)
+          .then((res) => {
+            exibirModalAlerta(res);
+          })
+          .catch(() => {
+            toast("toastErro").show();
+          });
+      }
     })
     .catch((error) => {
       api.logout().finally(() => {
@@ -35,15 +50,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Carregamento para modal pós login
 
-window.onload = () => {
-   const origem = document.referrer;
+// window.onload = () => {
+//   const origem = document.referrer;
 
-      if (origem && origem.includes("/login/index.html")) {
-        
-      } else {
-        console.log("Usuário acessou diretamente ou origem está oculta.");
-      }
-};
+//   if (origem && origem.includes("/login/index.html")) {
+//   } else {
+//     console.log("Usuário acessou diretamente ou origem está oculta.");
+//   }
+// };
 
 async function addOptionsTipoOrgaoFiltro() {
   try {
@@ -130,7 +144,6 @@ function addFuncaoBtnAviso(a) {
   document
     .getElementById(`btnVisualizarAlerta-${a.id}`)
     .addEventListener("click", () => {
-      // const toastContainer = document.querySelector(".toast-container"); // Para popups
       exibirModalAlerta(a);
     });
 
@@ -148,6 +161,12 @@ function addFuncaoBtnAviso(a) {
               let alerta = a;
               alerta.visualizado = true;
               upsertRow(alerta);
+              const toastAberto = document.getElementById(
+                `alerta-${alerta.id}`
+              );
+              if (toastAberto) {
+                toastAberto.remove();
+              }
               toast("toastOK").show();
             })
             .catch(() => {
@@ -186,7 +205,7 @@ function exibirModalAlerta(alerta) {
     btnCiente.id = `btnCiente-${alerta.id}`;
     // Desabilita se já visualizado
     btnCiente.disabled = !!alerta.visualizado;
-    btnCiente.addEventListener("click", () => {
+    btnCiente.onclick = () => {
       api
         .getUsuLogado()
         .then((res) => {
@@ -196,12 +215,25 @@ function exibirModalAlerta(alerta) {
               let a = alerta;
               a.visualizado = true;
               upsertRow(a);
+
+              const toastAberto = document.getElementById(
+                `alerta-${alerta.id}`
+              );
+              if (toastAberto) {
+                toastAberto.remove();
+              }
+              window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+              );
               toast("toastOK").show();
             })
-            .catch(() => {
+            .catch((error) => {
+              console.log(`erro no toast ${alerta.id}: `, error);
               toast("toastErro").show();
             });
-            btnCiente.disabled = true;
+          btnCiente.disabled = true;
         })
         .catch((error) => {
           api.logout().finally(() => {
@@ -209,18 +241,21 @@ function exibirModalAlerta(alerta) {
             window.location.href = "../login/index.html";
           });
         });
-    });
+    };
   }
+
+  document
+    .getElementById("alerta-modal-visu")
+    .addEventListener("hidden.bs.modal", () => {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    });
 
   // Exibe o modal
   const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
   modalInstance.show();
 }
 
-// Filtros (demo)
-document.getElementById("formFiltros").addEventListener("submit", (e) => {
-  e.preventDefault();
-
+function buscar() {
   api
     .getAlertsUsuario({
       status: document.getElementById("fStatus").value || null,
@@ -241,6 +276,12 @@ document.getElementById("formFiltros").addEventListener("submit", (e) => {
     .catch((error) => {
       console.warn("Erro ao buscar alertas: ", error);
     });
+}
+
+// Filtros (demo)
+document.getElementById("formFiltros").addEventListener("submit", (e) => {
+  e.preventDefault();
+  buscar();
 });
 
 document.getElementById("btnLimparFiltros").addEventListener("click", () => {

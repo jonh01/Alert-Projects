@@ -45,11 +45,11 @@ export function initDB() {
         tipoUsuario: "USUARIO",
       },
       {
-        id:3,
+        id: 3,
         nome: "Rodrigol",
         matricula: "0002",
         senha: "123456",
-        tipoUsuario: "USUARIO"
+        tipoUsuario: "USUARIO",
       },
     ]);
   }
@@ -75,7 +75,7 @@ export function initDB() {
         fk_usuario: 2,
         fk_orgao: 2,
       },
-            {
+      {
         id: 5,
         fk_usuario: 3,
         fk_orgao: 3,
@@ -118,10 +118,38 @@ export const api = {
     return tiposOrgaoDoUsuario;
   },
 
+  async getAlert(id) {
+    let alerts = load("alertas");
+    const alertaTipoOrgao = load("alertaTipoOrgao");
+    const usuarios = load("usuarios");
+
+    let alert = {};
+    // filtro por status
+    if (id) {
+      alert = alerts.find((a) => a.id === id);
+    }
+    if (alert) {
+      const relacionados = alertaTipoOrgao
+        .filter((o) => o.alertaId === alert.id)
+        .map((o) => o.tipoOrgao);
+      const usu = usuarios
+        .filter((u) => u.id === alert.fk_usuario_criador)
+        .map((u) => u.nome);
+
+      return {
+        ...alert,
+        nome_usuario_criador: usu.toString(),
+        alertasOrgaos: relacionados.length ? relacionados : [],
+      };
+    } else {
+      throw new Error("Alerta não encontrado!");
+    }
+  },
+
   async getAlerts({ status, inicio, fim, tipoOrgao } = {}) {
     let alerts = load("alertas");
     const alertaTipoOrgao = load("alertaTipoOrgao");
-    const usuarios = load("usuarios")
+    const usuarios = load("usuarios");
 
     // filtro por status
     if (status && status !== "TODOS") {
@@ -154,7 +182,9 @@ export const api = {
       const relacionados = alertaTipoOrgao
         .filter((o) => o.alertaId === a.id)
         .map((o) => o.tipoOrgao);
-      const usu = usuarios.filter((u) => u.id === a.fk_usuario_criador).map((u) => u.nome);
+      const usu = usuarios
+        .filter((u) => u.id === a.fk_usuario_criador)
+        .map((u) => u.nome);
 
       return {
         ...a,
@@ -308,6 +338,25 @@ export const api = {
     return alertasFiltrados;
   },
 
+  async atualizaStatusProgramado() {
+    const todosAlertas = load("alertas");
+    const agora = new Date();
+
+    todosAlertas.forEach((alerta) => {
+      if (alerta.status === "PROGRAMADO_PARA_ENVIO") {
+        const inicioDisparo = alerta.dtDisparo
+          ? new Date(alerta.dtDisparo)
+          : null;
+        if (inicioDisparo && inicioDisparo <= agora) {
+          alerta.status = "VIGENTE";
+        }
+      }
+    });
+
+    // Só salva uma vez no final
+    save("alertas", todosAlertas);
+  },
+
   async createAlert({
     id,
     titulo,
@@ -327,7 +376,10 @@ export const api = {
     if (id) {
       alertaExistente = alerts.find((a) => a.id === id);
 
-      if(alertaExistente.status === 'VIGENTE' || alertaExistente.status === 'FIALIZADO'){
+      if (
+        alertaExistente.status === "VIGENTE" ||
+        alertaExistente.status === "FIALIZADO"
+      ) {
         throw new Error("Alerta não pode ser alterado!");
       }
     }
@@ -390,9 +442,15 @@ export const api = {
     //   })
     // );
 
-    const usu = usuarios.filter((u) => u.id === alerta.fk_usuario_criador).map((u) => u.nome);
+    const usu = usuarios
+      .filter((u) => u.id === alerta.fk_usuario_criador)
+      .map((u) => u.nome);
 
-    return { ...alerta, nome_usuario_criador: usu.toString(), alertasOrgaos: alerO };
+    return {
+      ...alerta,
+      nome_usuario_criador: usu.toString(),
+      alertasOrgaos: alerO,
+    };
   },
 
   async deleteAlert(id) {
