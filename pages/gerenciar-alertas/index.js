@@ -213,7 +213,12 @@ function renderRow(a) {
         <td style="white-space: pre-wrap;">${limitarPalavras(a.descricao, 40)}</td>
         <td>${a.alertasOrgaos?a.alertasOrgaos.join(", "): ""}</td>
         <td>${a.nome_usuario_criador}</td>
-        <td>
+        <td> 
+          ${
+            '<span class="badge rounded-pill badge-info">' +
+                    a.tipoAlerta +
+            '</span>'
+          }
           ${
             a.status == "FINALIZADO"
               ? '<span class="badge rounded-pill badge-inativo">' +

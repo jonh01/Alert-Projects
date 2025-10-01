@@ -432,19 +432,19 @@ export const api = {
       save("alertaTipoOrgao", novos);
     }
 
-    // LINHA ADICIONADA PARA O SSE SIMULADO
-    // localStorage.setItem(
-    //   "__sse_new_alert_event__",
-    //   JSON.stringify({
-    //     id: crypto.randomUUID(),
-    //     idAlerta: alerta.id,
-    //     timestamp: Date.now(),
-    //   })
-    // );
-
     const usu = usuarios
       .filter((u) => u.id === alerta.fk_usuario_criador)
       .map((u) => u.nome);
+
+    // LINHA ADICIONADA PARA O SSE SIMULADO
+     /*localStorage.setItem(
+       "__sse_new_alert_event__",
+       JSON.stringify({
+         id: crypto.randomUUID(),
+         idAlerta: alerta.id,
+         timestamp: Date.now(),
+       })
+     );*/
 
     return {
       ...alerta,
@@ -556,5 +556,7 @@ export const api = {
     // localStorage.removeItem("alertas");
     // localStorage.removeItem("alertaTipoOrgao");
     // localStorage.removeItem("logsVisualizacao");
+    //localStorage.removeItem("__sse_new_alert_event__")
+    sessionStorage.removeItem("filaProcessada");
   },
 };

@@ -1,59 +1,97 @@
 import { api } from "./fakeAPI.js";
 import { criaModalAlerta, criaToastAlerta } from "./utils.js";
 
+const toast = (id) => new bootstrap.Toast(document.getElementById(id));
+
 // Envolvemos nosso código em uma IIFE para não poluir o escopo global
 (function () {
-  const alertasContainer = document.getElementById("alertas-container"); // Para modais
-  const toastContainer = document.querySelector(".toast-container"); // Para popups
-
   let filaDeModais = [];
   let modalAtual = null;
 
-  // --- Função para marcar alerta como lido ---
-  async function handleCheckAlert(alertaId, instance) {
-    try {
-      const usuario = await api.getUsuLogado();
-      await api.checkAlert(alertaId, usuario.id);
-      if (instance) instance.hide();
-      localStorage.setItem(`alerta_shown_${alertaId}`, "1"); // marca como exibido
-    } catch (error) {
-      console.error("Erro ao marcar alerta:", error);
-      if (instance) instance.hide();
-    }
-  }
-
   // --- Renderizar Modal ---
   function renderizarModal(alerta) {
-    const modalEl =  criaModalAlerta(alerta);
-    alertasContainer.appendChild(modalEl);
+    let modalEl = document.getElementById("alerta-modal-visu");
 
-    const modalInstance = new bootstrap.Modal(modalEl);
-    modalEl.querySelector(".btn-ciente").onclick = () =>
-      handleCheckAlert(alerta.id, modalInstance);
+    // Se não existe ainda, cria e adiciona ao DOM
+    if (!modalEl) {
+      modalEl = criaModalAlerta(alerta);
+      document.getElementById("alertas-container").appendChild(modalEl);
+    } else {
+      // Atualiza o conteúdo
+      modalEl.querySelector(".modal-title").textContent = alerta.titulo;
+      modalEl.querySelector(".modal-body").textContent = alerta.descricao;
+    }
 
-    modalEl.addEventListener("hidden.bs.modal", () => {
-      modalEl.remove();
-      modalAtual = null;
-      processarFilaDeModais(); // chama o próximo da fila
-    });
+    // Busca o botão dentro do modal
+    const btnCiente = modalEl.querySelector(".btn-ciente");
 
+    if (btnCiente) {
+      btnCiente.id = `btnCiente-${alerta.id}`;
+      // Desabilita se já visualizado
+      btnCiente.disabled = !!alerta.visualizado;
+      btnCiente.onclick = () => {
+        api
+          .getUsuLogado()
+          .then((res) => {
+            api
+              .checkAlert(alerta.id, res.id)
+              .then(() => {
+                const toastAberto = document.getElementById(
+                  `alerta-${alerta.id}`
+                );
+                if (toastAberto) {
+                  toastAberto.remove();
+                }
+                toast("toastOK").show();
+                btnCiente.disabled = true;
+                // Fecha o modal aqui
+                const modalIn =
+                  bootstrap.Modal.getInstance(modalEl) ||
+                  new bootstrap.Modal(modalEl);
+                modalIn.hide();
+              })
+              .catch((error) => {
+                console.log(`erro no toast ${alerta.id}: `, error);
+                toast("toastErro").show();
+              });
+          })
+          .catch((error) => {
+            api.logout().finally(() => {
+              console.warn("deu erro: ", error);
+              window.location.href = "../login/index.html";
+            });
+          });
+      };
+    }
+    // Exibe o modal
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
     modalInstance.show();
     modalAtual = modalInstance;
+
+    // Quando fechar, libera e chama próximo
+    modalEl.addEventListener(
+      "hidden.bs.modal",
+      () => {
+        modalAtual = null;
+        processarFilaDeModais();
+      },
+      { once: true }
+    );
   }
 
   // --- Renderizar Toast ---
   function renderizarToast(alerta) {
     const toastEl = criaToastAlerta(alerta);
 
-      // adiciona no container
+    // adiciona no container
     document.querySelector("#toast-container").appendChild(toastEl);
 
     // Aqui criamos o toast e desabilitamos o autohide
     const toastInstance = new bootstrap.Toast(toastEl, { autohide: false });
 
-    // Quando clicar em "Ciente"
+    // Quando clicar em "ler mais"
     toastEl.querySelector(".btn-primary").onclick = () =>
-      window.location.href = `/pages/meus-alertas/index.html?renderiza-modal=${alerta.id}`
+      (window.location.href = `/pages/meus-alertas/index.html?renderiza-modal=${alerta.id}`);
 
     // O X do toast ainda funciona normalmente
     toastEl.addEventListener("hidden.bs.toast", () => toastEl.remove());
@@ -71,27 +109,19 @@ import { criaModalAlerta, criaToastAlerta } from "./utils.js";
   // --- Dispatcher ---
   function renderizarAlerta(alerta) {
     if (document.getElementById(`alerta-${alerta.id}`)) return; // evita duplicados
-    if (localStorage.getItem(`alerta_shown_${alerta.id}`)) return; // já mostrado
 
     const origem = document.referrer;
 
-    // if (alerta.tipoAlerta.toLowerCase() === "modal") {
-    //   filaDeModais.push(alerta);
-    //   processarFilaDeModais();
-    // } else {
-    //   renderizarToast(alerta);
-    // }
-
-    if (alerta.tipoAlerta.toLowerCase() === "popup") 
-      renderizarToast(alerta);
-    else if(alerta.tipoAlerta.toLowerCase() === "modal"){
+    if (alerta.tipoAlerta.toLowerCase() === "popup") renderizarToast(alerta);
+    else if (alerta.tipoAlerta.toLowerCase() === "modal") {
       if (origem?.includes("/login/index.html")) {
-        console.log('abriu modal');
+        console.log("abriu modal");
+        filaDeModais.push(alerta);
       }
-    }
-    else if (alerta.tipoAlerta.toLowerCase() === "ambos"){
+    } else if (alerta.tipoAlerta.toLowerCase() === "ambos") {
       if (origem?.includes("/login/index.html")) {
-        console.log('abriu modal');
+        console.log("abriu modal ambos");
+        filaDeModais.push(alerta);
       } else {
         renderizarToast(alerta);
       }
@@ -100,19 +130,18 @@ import { criaModalAlerta, criaToastAlerta } from "./utils.js";
 
   // --- Buscar novos alertas ---
   async function verificarNovosAlertas() {
+    const origem = document.referrer;
     try {
       await api.atualizaStatusProgramado();
       const alertas = await api.getAlertsParaUsuario();
       alertas.forEach(renderizarAlerta);
+
+      if (origem?.includes("/login/index.html") && !sessionStorage.getItem("filaProcessada")) {
+        processarFilaDeModais();
+        sessionStorage.setItem("filaProcessada", "true");
+      }
     } catch (error) {
       console.error("Erro ao buscar alertas:", error);
-    }
-  }
-
-  // --- Ouvir storage (SSE fake) ---
-  function handleStorageChange(event) {
-    if (event.key === "__sse_new_alert_event__" && event.newValue) {
-      verificarNovosAlertas();
     }
   }
 
@@ -126,7 +155,6 @@ import { criaModalAlerta, criaToastAlerta } from "./utils.js";
   // --- Ponto de entrada ---
   document.addEventListener("DOMContentLoaded", () => {
     verificarNovosAlertas(); // inicial
-    // window.addEventListener("storage", handleStorageChange); // SSE fake 
     iniciarVerificacaoPeriodica(); // verifica alertas futuros
   });
 })();

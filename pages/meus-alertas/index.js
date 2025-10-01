@@ -185,7 +185,7 @@ function addFuncaoBtnAviso(a) {
 
 // ---------- Visualizações dos Alertas - Modal/popup -------------
 
-function exibirModalAlerta(alerta) {
+export function exibirModalAlerta(alerta) {
   let modalEl = document.getElementById("alerta-modal-visu");
 
   // Se não existe ainda, cria e adiciona ao DOM
@@ -228,12 +228,18 @@ function exibirModalAlerta(alerta) {
                 window.location.pathname
               );
               toast("toastOK").show();
+              btnCiente.disabled = true;
+
+              // Fecha o modal aqui
+              const modalIn =
+                bootstrap.Modal.getInstance(modalEl) ||
+                new bootstrap.Modal(modalEl);
+              modalIn.hide();
             })
             .catch((error) => {
               console.log(`erro no toast ${alerta.id}: `, error);
               toast("toastErro").show();
             });
-          btnCiente.disabled = true;
         })
         .catch((error) => {
           api.logout().finally(() => {
