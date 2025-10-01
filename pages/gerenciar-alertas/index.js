@@ -1,5 +1,10 @@
 import { api } from "../../fakeAPI.js";
-import { dataFormatada, limitarPalavras } from "../../utils.js";
+import {
+  criaModalAlerta,
+  dataFormatada,
+  dataFormatadaInput,
+  limitarPalavras,
+} from "../../utils.js";
 
 // utilitários bootstrap
 const toast = (id) => new bootstrap.Toast(document.getElementById(id));
@@ -21,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "../login/index.html";
       });
     });
-
 
   // add options de tipo órgão nos filtros
 
@@ -61,7 +65,7 @@ async function addOptionsTipoOrgao() {
 
 async function addOptionsTipoOrgaoFiltro() {
   try {
-        const res = await api.getTipoOrgao();
+    const res = await api.getTipoOrgao();
     const container = document.getElementById("fTipoOrgao");
 
     let html = container.innerHTML; // mantém o "Todos" que já existe
@@ -91,20 +95,26 @@ document.getElementById("btnNovoAlerta").addEventListener("click", () => {
 document.getElementById("formFiltros").addEventListener("submit", (e) => {
   e.preventDefault();
 
-  api.getAlerts({
-    status: document.getElementById("fStatus").value || null, 
-    inicio: document.getElementById("fDataInicio").value || null, 
-    fim: document.getElementById("fDataFim").value || null, 
-    tipoOrgao: document.getElementById("fTipoOrgao").value || null
-  }).then(res => {
-    console.log('teste ', res);
-    tbody.innerHTML = ''
-    res.forEach(linha => {
-      tbody.prepend(renderRow(linha));
+  api
+    .getAlerts({
+      status: document.getElementById("fStatus").value || null,
+      inicio: document.getElementById("fDataInicio").value || null,
+      fim: document.getElementById("fDataFim").value || null,
+      tipoOrgao: document.getElementById("fTipoOrgao").value || null,
     })
-  }).catch(error => {
-    console.warn('Erro ao buscar alertas: ', error);
-  })
+    .then((res) => {
+      console.log("teste ", res);
+      tbody.innerHTML = "";
+      res.forEach((linha) => {
+          const newRow = renderRow(linha);
+          newRow.id = `row-${linha.id}`;
+          tbody.append(newRow);
+          addFuncaoBtnAviso(linha); // reanexa eventos
+      });
+    })
+    .catch((error) => {
+      console.warn("Erro ao buscar alertas: ", error);
+    });
 });
 
 document.getElementById("btnLimparFiltros").addEventListener("click", () => {
@@ -117,7 +127,7 @@ const inputVigencia = document.getElementById("aVigencia");
 
 function updateVigenciaState() {
   const tipo = document.querySelector('input[name="aTipo"]:checked')?.value;
-  const habilita = tipo === "modal" || tipo === "ambos";
+  const habilita = tipo === "MODAL" || tipo === "AMBOS";
   inputVigencia.disabled = !habilita;
   if (!habilita) inputVigencia.value = "";
 }
@@ -132,9 +142,11 @@ function syncDisparo() {
     inputData.value = "";
     inputData.disabled = true;
     inputData.removeAttribute("required");
+    document.getElementById("btnFinalizar").innerText = 'Publicar';
   } else {
     inputData.disabled = false;
     inputData.setAttribute("required", "true");
+    document.getElementById("btnFinalizar").innerText = 'Programar';
   }
 }
 chkInstant.addEventListener("change", syncDisparo);
@@ -191,37 +203,22 @@ addOptionsTipoOrgao().then(() => initDropdownOrgaos());
 // --------- Tabela demo / ações -------------------------
 const tbody = document.getElementById("tbodyAlert");
 
-const seed = [
-  {
-    data: "2025-03-23 14:40",
-    titulo: "Emissor de Ressalva",
-    desc: "Alerta de ressava, recepcionista, atendente.",
-    resp: "NÚCLEO DE PRIMEIRO ATENDIMENTO",
-    status: true,
-  },
-  {
-    data: "2025-03-24 09:10",
-    titulo: "Plantão Diurno",
-    desc: "Ajustes de atendimento em Resende/Barra Mansa/Itatiaia.",
-    resp: "PLANTÃO DIURNO",
-    status: true,
-  },
-  {
-    data: "2025-03-20 18:05",
-    titulo: "Ação Social 3",
-    desc: "Comunicado de rotina.",
-    resp: "AÇÃO SOCIAL 3",
-    status: false,
-  },
-];
 function renderRow(a) {
   const tr = document.createElement("tr");
+
+  tr.id = `row-${a.id}`;
   tr.innerHTML = `
         <td>${dataFormatada(a.dataCriacao)}</td>
         <td class="fw-semibold">${a.titulo}</td>
-        <td>${limitarPalavras(a.descricao, 60)}</td>
-        <td>${a.alertasOrgaos.join(", ")}</td>
-        <td>
+        <td style="white-space: pre-wrap;">${limitarPalavras(a.descricao, 40)}</td>
+        <td>${a.alertasOrgaos?a.alertasOrgaos.join(", "): ""}</td>
+        <td>${a.nome_usuario_criador}</td>
+        <td> 
+          ${
+            '<span class="badge rounded-pill badge-info">' +
+                    a.tipoAlerta +
+            '</span>'
+          }
           ${
             a.status == "FINALIZADO"
               ? '<span class="badge rounded-pill badge-inativo">' +
@@ -233,37 +230,208 @@ function renderRow(a) {
           }
         </td>
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-outline-secondary m-1" title="Editar">
+            <button type="button" id="btnEditarAlerta-${
+              a.id
+            }" class="btn btn-sm btn-outline-secondary m-1" title="Editar">
                 <i class="bi bi-pencil-square"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-warning m-1 btnEncerrar" title="Encerrar">
+            <button type="button" id="btnEncerrarAlerta-${
+              a.id
+            }" class="btn btn-sm btn-outline-warning m-1 btnEncerrar" title="Encerrar">
                 <i class="bi bi-x-octagon"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-danger m-1 btnExcluir" title="Excluir">
+            <button type="button" id="btnExcluirAlerta-${
+              a.id
+            }" class="btn btn-sm btn-outline-danger m-1 btnExcluir" title="Excluir">
                 <i class="bi bi-trash"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-primary m-1 btnVisualizar" title="Visualizar">
+            <button type="button" id="btnVisualizarAlerta-${
+              a.id
+            }" class="btn btn-sm btn-outline-primary m-1 btnVisualizar" title="Visualizar">
                 <i class="bi bi-eye"></i>
             </button>
         </td>`;
+
   return tr;
+}
+
+function upsertRow(alerta) {
+  let existingRow = document.querySelector(`#row-${alerta.id}`);
+  const newRow = renderRow(alerta);
+  newRow.id = `row-${alerta.id}`;
+
+  if (existingRow) {
+    existingRow.replaceWith(newRow); // substitui no lugar
+  } else {
+    tbody.prepend(newRow); // adiciona no topo
+  }
+
+  addFuncaoBtnAviso(alerta); // reanexa eventos
+}
+
+// --------- Chamada dos Botões dos Alertas ----------
+
+function addFuncaoBtnAviso(a) {
+  // === EDITAR ===
+
+  document
+    .getElementById(`btnEditarAlerta-${a.id}`)
+    .addEventListener("click", () => {
+      if (a.status === "VIGENTE" || a.status === 'FINALIZADO') {
+        toast("toastErro").show();
+        return;
+      }
+      document.getElementById("formAlerta").dataset.editId = a.id;
+
+      // Preenche os campos do modal
+      document.getElementById("aTitulo").value = a.titulo || "";
+      document.getElementById("aDescricao").value = a.descricao || "";
+
+      if (a.tipoAlerta) {
+        const radio = document.querySelector(
+          `input[name="aTipo"][value="${a.tipoAlerta.toLowerCase()}"]`
+        );
+        if (radio) radio.checked = true;
+      }
+
+      document.getElementById("aData").value = dataFormatadaInput(a.dtDisparo) || "";
+      document.getElementById("aInstantaneo").checked = !!a.instantaneo;
+      document.getElementById("aVigencia").value = dataFormatadaInput(a.vigenciaFim) || "";
+
+      // Órgãos
+      document.querySelectorAll(".orgao-item").forEach((el) => {
+        el.checked = false;
+      });
+      if (a.alertasOrgaos?.includes("TODOS")) {
+        document.getElementById("orgao_todos").checked = true;
+        document.querySelectorAll(".orgao-item").forEach((el) => {
+          el.checked = true;
+        });
+      } else if (Array.isArray(a.alertasOrgaos)) {
+        a.alertasOrgaos.forEach((tp) => {
+          const cb = document.getElementById(tp);
+          if (cb) cb.checked = true;
+        });
+      }
+
+      updateVigenciaState();
+      syncDisparo();
+      refreshLabel();
+
+      bootstrap.Modal.getOrCreateInstance(
+        document.getElementById("modalCriarAlerta")
+      ).show();
+    });
+
+  // === ENCERRAR ===
+  document
+    .getElementById(`btnEncerrarAlerta-${a.id}`)
+    .addEventListener("click", () => {
+      if (a.status !== "VIGENTE") {
+        // regra de negócio: só encerra se estiver VIGENTE
+        toast("toastErro").show();
+        return;
+      }
+
+      api
+        .alterarAlert(a.id, 'FINALIZADO')
+        .then((updated) => {
+          // Atualiza visual na tabela
+          a.status = updated.status; // atualiza o objeto local
+          upsertRow(updated); // re-renderiza a linha
+
+          toast("toastEncerrado").show();
+        })
+        .catch((error) => {
+          console.warn("Erro ao encerrar alerta:", error);
+          toast("toastErro").show();
+        });
+    });
+
+  // === EXCLUIR ===
+  document
+    .getElementById(`btnExcluirAlerta-${a.id}`)
+    .addEventListener("click", () => {
+      if (a.status === "VIGENTE" || a.status === 'FINALIZADO') {
+        // regra de negócio
+        toast("toastErro").show();
+        return;
+      }
+
+      api
+        .deleteAlert(a.id)
+        .then(() => {
+          // Remove a linha da tabela
+          const row = document
+            .getElementById(`btnExcluirAlerta-${a.id}`)
+            .closest("tr");
+          row.remove();
+
+          toast("toastExcluido").show();
+        })
+        .catch((error) => {
+          console.warn("Erro ao excluir alerta:", error);
+          toast("toastErro").show();
+        });
+    });
+
+  // === VISUALIZAR ===
+  document
+    .getElementById(`btnVisualizarAlerta-${a.id}`)
+    .addEventListener("click", () => {
+      // const toastContainer = document.querySelector(".toast-container"); // Para popups
+      exibirModalAlerta(a);
+    });
+}
+
+// ---------- Visualizações dos Alertas - Modal/popup -------------
+
+function exibirModalAlerta(alerta) {
+  let modalEl = document.getElementById("alerta-modal-visu");
+
+  // Se não existe ainda, cria e adiciona ao DOM
+  if (!modalEl) {
+    modalEl = criaModalAlerta(alerta);
+    document.getElementById("alertas-container").appendChild(modalEl);
+  } else {
+    // Atualiza o conteúdo
+    modalEl.querySelector(".modal-title").textContent = alerta.titulo;
+    modalEl.querySelector(".modal-body").textContent = alerta.descricao;
+  }
+
+  // Desabilita o botão "Ciente" se necessário
+  const btnCiente = modalEl.querySelector(".btn-ciente");
+  if (btnCiente) {
+    btnCiente.disabled = true; // ou false, dependendo da lógica
+  }
+
+  // Exibe o modal
+  const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+  modalInstance.show();
 }
 
 // --------- Salvar / Finalizar --------------
 async function coletarAlerta(salvar) {
   const tipo = document.querySelector('input[name="aTipo"]:checked')?.value;
-  const tipoOrgaos = document.getElementById("orgao_todos").checked
-    ? ["TODOS"]
-    : [...document.querySelectorAll(".orgao-item")]
+  const tipoOrgaos = [...document.querySelectorAll(".orgao-item")]
         .filter((i) => i.checked)
         .map((i) => i.value);
 
   try {
     let usuario = await api.getUsuLogado();
+    const form = document.getElementById("formAlerta");
 
-    console.log(tipoOrgaos);
+    let status = '';
+
+    if(salvar === true)
+      status = 'EM_ELABORACAO';
+    else if(chkInstant.checked)
+      status = 'VIGENTE';
+    else
+      status = 'PROGRAMADO_PARA_ENVIO';
 
     return {
+      id: form.dataset.editId || null, // 👈 se tiver id, é edição
       titulo: document.getElementById("aTitulo").value.trim(),
       descricao: document.getElementById("aDescricao").value.trim(),
       tipoAlerta: tipo,
@@ -271,7 +439,7 @@ async function coletarAlerta(salvar) {
       instantaneo: chkInstant.checked,
       vigenciaFim: inputVigencia.value,
       tipoOrgao: tipoOrgaos,
-      status: salvar === true ? "EM_ELABORACAO" : "VIGENTE",
+      status: status,
       fk_usuario_criador: usuario.id,
     };
   } catch (error) {
@@ -279,26 +447,68 @@ async function coletarAlerta(salvar) {
   }
 }
 
-document.getElementById("btnSalvar").addEventListener("click", () => {
+// valida o tipo orgao que é diferente dos demais
+
+function InvalidForm() {
   if (
     !document.getElementById("aTitulo").value.trim() ||
     !document.getElementById("aDescricao").value.trim() ||
     (!inputData.value && !chkInstant.checked)
   ) {
     document.getElementById("formAlerta").reportValidity();
-    return;
+    return true;
   }
+
+  const orgaosSelecionados = [
+    ...document.querySelectorAll(".orgao-item:checked"),
+  ];
+
+  // se "Todos" não estiver marcado e nenhum item individual estiver selecionado
+  const todosMarcado = document.getElementById("orgao_todos").checked;
+
+  if (!todosMarcado && orgaosSelecionados.length === 0) {
+    // feedback visual
+    const btnOrgaos = document.getElementById("btnOrgaos");
+    btnOrgaos.classList.add("is-invalid");
+
+    // mensagem customizada
+    btnOrgaos.setCustomValidity("Selecione pelo menos um tipo de órgão");
+    btnOrgaos.reportValidity();
+    return true;
+  } else {
+    // limpa estado inválido se ok
+    const btnOrgaos = document.getElementById("btnOrgaos");
+    btnOrgaos.classList.remove("is-invalid");
+    btnOrgaos.setCustomValidity("");
+  }
+}
+
+document.getElementById("btnSalvar").addEventListener("click", () => {
+  if (InvalidForm()) return;
 
   coletarAlerta(true)
     .then((result) => {
       api
         .createAlert(result)
         .then((res) => {
-          tbody.prepend(renderRow(res));
+          const modalElement = document.getElementById("modalCriarAlerta");
+          const modal = bootstrap.Modal.getInstance(modalElement);
+
+          if (modal) {
+            // tira o foco de qualquer input/textarea antes de fechar
+            if (document.activeElement) document.activeElement.blur();
+            modal.hide();
+          }
+
+          upsertRow(res);
+
           toast("toastOK").show();
+          delete document.getElementById("formAlerta").dataset.editId;
+          limparForm();
         })
         .catch((error) => {
           console.warn("erro ao salvar o alerta! ", error);
+          toast("toastErroSave").show();
         });
     })
     .catch((error) => {
@@ -308,29 +518,24 @@ document.getElementById("btnSalvar").addEventListener("click", () => {
 
 document.getElementById("formAlerta").addEventListener("submit", (e) => {
   e.preventDefault();
-  if (
-    !document.getElementById("aTitulo").value.trim() ||
-    !document.getElementById("aDescricao").value.trim() ||
-    (!inputData.value && !chkInstant.checked)
-  ) {
-    document.getElementById("formAlerta").reportValidity();
-    return;
-  }
+  if (InvalidForm()) return;
 
   coletarAlerta(false)
     .then((result) => {
       api
         .createAlert(result)
         .then((res) => {
-          tbody.prepend(renderRow(res));
+          upsertRow(res);
           bootstrap.Modal.getInstance(
             document.getElementById("modalCriarAlerta")
           ).hide();
           toast("toastFinalizado").show();
+          delete document.getElementById("formAlerta").dataset.editId;
           limparForm();
         })
         .catch((error) => {
           console.warn("erro ao salvar o alerta! ", error);
+          toast("toastErroSave").show();
         });
     })
     .catch((error) => {
@@ -338,12 +543,20 @@ document.getElementById("formAlerta").addEventListener("submit", (e) => {
     });
 });
 
+// Quando o modal fechar de qualquer forma, limpa o formulário
+document
+  .getElementById("modalCriarAlerta")
+  .addEventListener("hidden.bs.modal", () => {
+    limparForm();
+  });
+
 document.getElementById("btnCancelar").addEventListener("click", () => {
   limparForm();
 });
 
 function limparForm() {
   document.getElementById("formAlerta").reset();
+  delete document.getElementById("formAlerta").dataset.editId; // 👈 remove id salvo
   updateVigenciaState();
   syncDisparo();
   refreshLabel();
