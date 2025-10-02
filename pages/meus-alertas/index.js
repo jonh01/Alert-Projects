@@ -48,17 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
   addOptionsTipoOrgaoFiltro();
 });
 
-// Carregamento para modal pós login
-
-// window.onload = () => {
-//   const origem = document.referrer;
-
-//   if (origem && origem.includes("/login/index.html")) {
-//   } else {
-//     console.log("Usuário acessou diretamente ou origem está oculta.");
-//   }
-// };
-
 async function addOptionsTipoOrgaoFiltro() {
   try {
     const res = await api.getUsuTipoOrgao();
@@ -183,7 +172,7 @@ function addFuncaoBtnAviso(a) {
   }
 }
 
-// ---------- Visualizações dos Alertas - Modal/popup -------------
+// ---------- Visualizações dos Alertas - Modal -------------
 
 export function exibirModalAlerta(alerta) {
   let modalEl = document.getElementById("alerta-modal-visu");

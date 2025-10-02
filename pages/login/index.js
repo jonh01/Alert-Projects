@@ -13,9 +13,7 @@ function logar(event) {
     api.login({matricula, senha}).then(res => {
 
         console.log('Login bem-sucedido!', res);
-        res.tipoUsuario.includes("ADM")?
-            window.location.href = "../gerenciar-alertas/index.html": 
-            window.location.href = "../meus-alertas/index.html";
+        window.location.href = "../pauta-do-dia/index.html";
     }).catch((error) => {
         document.getElementById("toastLoginConteudo").innerText = error.message;
         meuToast.show();
