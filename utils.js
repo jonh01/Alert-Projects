@@ -48,7 +48,7 @@ export const criaModalAlerta = (alerta) => {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
           </div>
           <div class="modal-body" style="white-space: pre-wrap;">
-            <p>${alerta.descricao}</p>
+            ${alerta.descricao}
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-success btn-ciente" id="btnCiente-${alerta.id}">Ciente</button>

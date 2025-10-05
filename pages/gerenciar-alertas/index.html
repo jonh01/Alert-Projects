@@ -13,90 +13,10 @@
   <!-- Bootstrap Icons (opcional, só para ícones) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
 
-  <style>
-    :root {
-      --verde: #2bb673;
-      --verde-escuro: #1f8d58;
-      --cinza-bg: #f5f6f7;
-    }
+  <!-- quill -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 
-    body {
-      background: var(--cinza-bg);
-    }
-
-    .app-header {
-      background: #14b88a;
-      /* barra tipo VERDE */
-      color: #fff;
-      padding: 0.6rem 0;
-    }
-
-    .app-header .brand {
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-
-    .page-title {
-      font-weight: 700;
-      color: #1f2937;
-    }
-
-    .card-filtros .card-header {
-      background: #fff;
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .btn-verde {
-      background: var(--verde);
-      color: #fff;
-      border-color: var(--verde);
-    }
-
-    .btn-verde:hover {
-      background: var(--verde-escuro);
-      border-color: var(--verde-escuro);
-    }
-
-    .form-text-muted {
-      font-size: 0.8rem;
-      color: #6b7280;
-    }
-
-    .table thead th {
-      background: #eef7f2;
-    }
-
-    .badge-ativo {
-      background: #e8fff4;
-      color: #0b8a4a;
-      border: 1px solid #a9ebc9;
-    }
-
-    .badge-inativo {
-      background: #fff0f0;
-      color: #a11;
-      border: 1px solid #f3b7b7;
-    }
-
-    .badge-info {
-      background: #117A8B;
-      color: rgb(255, 255, 255);
-      border: 1px solid #05535f;
-      margin-bottom: 3px;
-    }
-
-    .dropdown-checklist .dropdown-menu {
-      max-height: 260px;
-      overflow: auto;
-      padding: 0.5rem 0.75rem;
-      width: 320px;
-    }
-
-    #btnOrgaos.is-invalid {
-      border-color: #dc3545;
-    }
-  </style>
 </head>
 
 <body>
@@ -212,7 +132,7 @@
 
   <!-- Modal: Criar Alerta -->
   <div class="modal" id="modalCriarAlerta" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
@@ -224,18 +144,34 @@
           <div class="modal-body">
             <div class="row g-3">
               <div class="col-12">
-                <label class="form-label">Título do alerta</label>
+                <label class="form-label">Título do alerta *</label>
                 <input type="text" class="form-control" id="aTitulo" required />
               </div>
 
               <div class="col-12">
-                <label class="form-label">Descrição</label>
-                <textarea class="form-control" rows="4" id="aDescricao" required></textarea>
+                <label class="form-label">Descrição *</label>
+                <!-- <textarea class="form-control" rows="4" id="aDescricao" required></textarea> -->
+                <div id="toolbar">
+                  <button class="ql-bold"></button>
+                  <button class="ql-italic"></button>
+                  <button class="ql-underline"></button>
+                  <button class="ql-list" value="ordered"></button>
+                  <button class="ql-list" value="bullet"></button>
+                  <select class="ql-align"></select>
+                  <button class="ql-indent" value="-1"></button>
+                  <button class="ql-indent" value="+1"></button>
+                  <button class="ql-link"></button>
+                  <button class="ql-image"></button>
+                  <button class="ql-video"></button>
+                  <button class="ql-clean"></button>
+                </div>
+                <!-- Div do editor -->
+                <div id="editor" class="editor-bootstrap"></div>
               </div>
 
               <div class="col-12">
                 <label class="form-label d-block mb-1">
-                  Tipo de alerta
+                  Tipo de alerta *
                   <i class="bi bi-info-circle ms-1 text-muted" data-bs-toggle="tooltip" data-bs-placement="right"
                     title="• Pop-up aparece no topo direito para quem está logado. • Modal é apresentado após login até o usuário clicar em ESTOU CIENTE."></i>
                 </label>
@@ -256,7 +192,7 @@
               <!-- Tipo de órgão: dropdown com checkboxes -->
               <div class="col-12">
                 <label class="form-label">
-                  Tipo de Órgão
+                  Tipo de Órgão *
                   <i class="bi bi-info-circle ms-1 text-muted" data-bs-toggle="tooltip"
                     title="Ao marcar Todos, todos os tipos são selecionados."></i>
                 </label>
@@ -377,6 +313,10 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- quill -->
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
   <script type="module" src="../../monitor-alertas.js"></script>
   <script type="module" src="./index.js"></script>
 </body>

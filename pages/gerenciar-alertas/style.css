@@ -1,0 +1,123 @@
+:root {
+    --verde: #2bb673;
+    --verde-escuro: #1f8d58;
+    --cinza-bg: #f5f6f7;
+}
+
+body {
+    background: var(--cinza-bg);
+}
+
+/* Quando a altura da janela for 910px ou menor */
+@media (max-height: 910px) {
+    .modal-dialog-scrollable .modal-body {
+        max-height: calc(100vh - 220px);
+        /* padrão */
+    }
+}
+
+.app-header {
+    background: #14b88a;
+    /* barra tipo VERDE */
+    color: #fff;
+    padding: 0.6rem 0;
+}
+
+.app-header .brand {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.page-title {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.card-filtros .card-header {
+    background: #fff;
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.btn-verde {
+    background: var(--verde);
+    color: #fff;
+    border-color: var(--verde);
+}
+
+.btn-verde:hover {
+    background: var(--verde-escuro);
+    border-color: var(--verde-escuro);
+}
+
+.form-text-muted {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.table thead th {
+    background: #eef7f2;
+}
+
+.badge-ativo {
+    background: #e8fff4;
+    color: #0b8a4a;
+    border: 1px solid #a9ebc9;
+}
+
+.badge-inativo {
+    background: #fff0f0;
+    color: #a11;
+    border: 1px solid #f3b7b7;
+}
+
+.badge-info {
+    background: #117A8B;
+    color: rgb(255, 255, 255);
+    border: 1px solid #05535f;
+    margin-bottom: 3px;
+}
+
+.dropdown-checklist .dropdown-menu {
+    max-height: 260px;
+    overflow: auto;
+    padding: 0.5rem 0.75rem;
+    width: 320px;
+}
+
+#btnOrgaos.is-invalid {
+    border-color: #dc3545;
+}
+
+#editor {
+    height: 200px;
+    /* ou o valor que você quiser */
+    border: 1px solid #ced4da;
+    /* borda igual ao form-control */
+    border-radius: 0.375rem;
+    /* arredondamento igual ao Bootstrap */
+}
+
+.editor-bootstrap {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    padding: 0;
+    /* o Quill já cuida do padding interno */
+}
+
+.modal .ql-tooltip {
+    z-index: 2000 !important;
+    /* acima do modal */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+
+/* para exibição fora do editor */
+
+.ql-editor iframe, .modal-body iframe {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  display: block;
+}

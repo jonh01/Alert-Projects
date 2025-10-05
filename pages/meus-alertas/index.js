@@ -184,7 +184,7 @@ export function exibirModalAlerta(alerta) {
   } else {
     // Atualiza o conteúdo
     modalEl.querySelector(".modal-title").textContent = alerta.titulo;
-    modalEl.querySelector(".modal-body").textContent = alerta.descricao;
+    modalEl.querySelector(".modal-body").innerHTML = alerta.descricao;
   }
 
   // Busca o botão dentro do modal
@@ -243,6 +243,12 @@ export function exibirModalAlerta(alerta) {
     .getElementById("alerta-modal-visu")
     .addEventListener("hidden.bs.modal", () => {
       window.history.replaceState({}, document.title, window.location.pathname);
+      modalEl.querySelectorAll("iframe").forEach((iframe) => {
+          const src = iframe.src;
+          iframe.src = "";
+          iframe.src = src;
+        });
+        modalAtual = null;
     });
 
   // Exibe o modal

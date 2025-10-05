@@ -9,6 +9,15 @@ import {
 // utilitários bootstrap
 const toast = (id) => new bootstrap.Toast(document.getElementById(id));
 
+// iniciar quill
+
+const quill = new Quill('#editor', {
+  theme: 'snow',
+  modules: {
+    toolbar: '#toolbar'
+  }
+});
+
 // Carregamento inicial da página
 document.addEventListener("DOMContentLoaded", function () {
   api
@@ -396,7 +405,7 @@ function exibirModalAlerta(alerta) {
   } else {
     // Atualiza o conteúdo
     modalEl.querySelector(".modal-title").textContent = alerta.titulo;
-    modalEl.querySelector(".modal-body").textContent = alerta.descricao;
+    modalEl.querySelector(".modal-body").innerHTML = alerta.descricao;
   }
 
   // Desabilita o botão "Ciente" se necessário
@@ -430,10 +439,12 @@ async function coletarAlerta(salvar) {
     else
       status = 'PROGRAMADO_PARA_ENVIO';
 
+    const html = quill.root.innerHTML;
+
     return {
       id: form.dataset.editId || null, // 👈 se tiver id, é edição
       titulo: document.getElementById("aTitulo").value.trim(),
-      descricao: document.getElementById("aDescricao").value.trim(),
+      descricao: html,
       tipoAlerta: tipo,
       dtDisparo: inputData.value,
       instantaneo: chkInstant.checked,
@@ -450,13 +461,14 @@ async function coletarAlerta(salvar) {
 // valida o tipo orgao que é diferente dos demais
 
 function InvalidForm() {
+    const quillContent = quill.root.innerHTML;
+    let isInvalid = 0;
   if (
     !document.getElementById("aTitulo").value.trim() ||
-    !document.getElementById("aDescricao").value.trim() ||
     (!inputData.value && !chkInstant.checked)
   ) {
     document.getElementById("formAlerta").reportValidity();
-    return true;
+    isInvalid++;
   }
 
   const orgaosSelecionados = [
@@ -474,13 +486,34 @@ function InvalidForm() {
     // mensagem customizada
     btnOrgaos.setCustomValidity("Selecione pelo menos um tipo de órgão");
     btnOrgaos.reportValidity();
-    return true;
+    isInvalid++;
   } else {
     // limpa estado inválido se ok
     const btnOrgaos = document.getElementById("btnOrgaos");
     btnOrgaos.classList.remove("is-invalid");
     btnOrgaos.setCustomValidity("");
   }
+
+  if (quillContent === '<p><br></p>' ){
+    const editor = document.querySelector("#editor");
+
+    // aplica estilos diretamente
+    editor.style.border = "2px solid red";
+    editor.style.borderRadius = "8px";
+    editor.style.padding = "5px";
+    isInvalid++;
+  }
+  else{
+    // limpa estado inválido se ok
+    const editor = document.querySelector("#editor");
+
+    // aplica estilos diretamente
+    editor.style.border = "1px solid #ced4da";
+    editor.style.borderRadius = "0.375rem";
+    editor.style.padding = "0px";
+  }
+
+  return isInvalid>0;
 }
 
 document.getElementById("btnSalvar").addEventListener("click", () => {
@@ -550,11 +583,28 @@ document
     limparForm();
   });
 
+document
+  .getElementById("alertas-container")
+  .addEventListener("hidden.bs.modal", () => {
+    let modalEl = document.getElementById("alertas-container");
+    modalEl.querySelectorAll("iframe").forEach((iframe) => {
+      const src = iframe.src;
+      iframe.src = "";
+      iframe.src = src;
+    });
+  });
+
 document.getElementById("btnCancelar").addEventListener("click", () => {
   limparForm();
 });
 
 function limparForm() {
+  const quillContent = quill.root.innerHTML;
+
+  if(quillContent !== '<p><br></p>' ){
+    quill.root.innerHTML = "<p><br></p>";
+  }
+
   document.getElementById("formAlerta").reset();
   delete document.getElementById("formAlerta").dataset.editId; // 👈 remove id salvo
   updateVigenciaState();
