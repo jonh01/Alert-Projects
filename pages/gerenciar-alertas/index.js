@@ -294,7 +294,7 @@ function addFuncaoBtnAviso(a) {
 
       // Preenche os campos do modal
       document.getElementById("aTitulo").value = a.titulo || "";
-      document.getElementById("aDescricao").value = a.descricao || "";
+      quill.root.innerHTML = a.descricao || "<p><br></p>";
 
       if (a.tipoAlerta) {
         const radio = document.querySelector(
